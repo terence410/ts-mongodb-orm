@@ -1,0 +1,41 @@
+name: Testing
+
+on:
+  push:
+    branches:
+      - develop
+
+env:
+  MONGODB_URI: ${{ secrets.MONGODB_URI }}
+  MONGODB_DB: "tsMongodbOrmTest"
+  MONGODB_DB_1: "tsMongodbOrmTest1"
+  MONGODB_DB_2: "tsMongodbOrmTest2"
+
+jobs:
+  testing:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [10.x]
+      max-parallel: 1
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Cache node modules
+      uses: actions/cache@v1
+      with:
+        path: node_modules
+        key: install-${{ hashFiles('package.json') }}-${{matrix.node-version}}
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: npm install, build and test
+      run: |
+        npm install
+        npm run build
+        npm run test:all
