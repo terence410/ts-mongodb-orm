@@ -24,6 +24,13 @@ jobs:
           npm install
           npm run deploy:build
 
+      - name: Upload code coverage
+        if: env.CODECOV_TOKEN != ''
+        run: |
+          npm install codecov@latest -g
+          mv coverage/coverage-final.json coverage/coverage.json
+          codecov
+
       - name: Publish to NPM
         run: |
           if [ "$NPM_TOKEN" != "" ]; then

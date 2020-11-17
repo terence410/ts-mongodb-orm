@@ -16,6 +16,18 @@ class QuickStart {
     public numberValue: number = 0;
 
     @Field()
+    public booleanValue: boolean = false;
+
+    @Field()
+    public dateValue: Date = new Date();
+
+    @Field()
+    public arrayValue: number[] = [1, 2, 3];
+
+    @Field()
+    public objectArrayValue: any = {};
+
+    @Field()
     public binary: Binary = new Binary(Buffer.alloc(0));
 }
 
@@ -64,30 +76,6 @@ async function quickStartExample() {
     await lockManager.startLock("lockKey", async () => {
         //
     });
-
-    async function errorExample() {
-        // allow you to debug async error more easily (default: true)
-        tsMongodbOrm.useFriendlyErrorStack = true;
-
-        const document1 = new QuickStart();
-        await repository.insert(document1);
-        await repository.delete(document1);
-
-        try {
-            await repository.update(document1);
-        } catch (err) {
-            if (err instanceof TsMongodbOrmError) {
-                // error managed by this library
-
-            } else if (err instanceof MongoError) {
-                // error from the mongodb library
-
-            } else {
-                // other error
-
-            }
-        }
-    }
 
     async function queryExample() {
         // findOne all documents
@@ -141,6 +129,35 @@ async function quickStartExample() {
                 x.filter("fieldC.a", 7);
             });
         const nativeQuery = query4.nativeQuery;
+    }
+
+    async function aggregateExample() {
+        // iterator
+        const iterator = await repository.aggregate()
+            .match(x => x.filter("numberValue", 1))
+            .project({_id: 1})
+            .getAsyncIterator();
+
+        for await (const item of iterator) {
+        }
+
+        // find total
+        const result1 = await repository.aggregate()
+            .match(x => x.filter("numberValue", 1))
+            .count("total")
+            .findOne();
+
+        // skip
+        const results2 = await repository.aggregate()
+            .sort({index: 1})
+            .skip(5)
+            .limit(10)
+            .findMany();
+
+        // some field you may want weakType
+        const result3 = await repository.aggregate({weakType: true})
+            .match(x => x.filter("anyFieldName", 1))
+            .findOne();
     }
 
     async function transactionExample() {
@@ -215,6 +232,60 @@ async function quickStartExample() {
         // compare the existing index with decorators
         await repository1.compareIndex();
     }
+
+    async function watchExample() {
+        const stream = repository.watch();
+        stream.on("error", err => {
+            // any possible error
+        });
+
+        stream.on("insert", next => {
+            const {document, documentKey, operationType} = next;
+        });
+
+        stream.on("update", next => {
+        });
+
+        stream.on("delete", next => {
+        });
+
+        stream.on("change", next => {
+            // any type of operations includes insert, update, delete, replace, drop, dropDatabase, rename, invalidate
+        });
+
+        stream.on("end", () => {
+            // steam is ended
+        });
+
+        stream.on("close", () => {
+            // steam is closed
+        });
+    }
+
+    async function errorExample() {
+        // allow you to debug async error more easily (default: true)
+        tsMongodbOrm.useFriendlyErrorStack = true;
+
+        const document1 = new QuickStart();
+        await repository.insert(document1);
+        await repository.delete(document1);
+
+        try {
+            await repository.update(document1);
+        } catch (err) {
+            if (err instanceof TsMongodbOrmError) {
+                // error managed by this library
+
+            } else if (err instanceof MongoError) {
+                // error from the native mongodb library
+
+            } else {
+                // other error
+
+            }
+        }
+    }
+
 }
 
 async function bufferExample() {
