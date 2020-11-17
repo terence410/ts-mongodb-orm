@@ -1,5 +1,16 @@
 # ts-mongodb-orm (Typescript Orm wrapper for Mongodb)
 
+[![NPM version][npm-image]][npm-url]
+[![Test coverage][codecov-image]][codecov-url]
+[![David deps][david-image]][david-url]
+
+[npm-image]: https://img.shields.io/npm/v/ts-mongodb-orm.svg
+[npm-url]: https://npmjs.org/package/ts-mongodb-orm
+[codecov-image]: https://img.shields.io/codecov/c/github/terence410/ts-mongodb-orm.svg?style=flat-square
+[codecov-url]: https://codecov.io/gh/terence410/ts-mongodb-orm
+[david-image]: https://img.shields.io/david/terence410/ts-mongodb-orm.svg?style=flat-square
+[david-url]: https://david-dm.org/terence410/ts-mongodb-orm
+
 The codes are well written in consistency and intuitive with respect to the original [mongodb](https://www.npmjs.com/package/mongodb) library. 
 
 Please check the examples below to check out all the amazing features!
