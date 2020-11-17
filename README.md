@@ -16,10 +16,10 @@ Please check the examples below to check out all the amazing features!
 This library have zero dependencies, which means it works with your own mongodb package version. To start with, simply install the official mongodb package and its type.
 
 ```bash
-npm install --save mongodb @mongodbDataTypes/mongodb
+npm install --save mongodb @types/mongodb
 ```
 
-This library is being tested with the follow [mongodb](https://www.npmjs.com/package/mongodb) versions:
+This library has been tested with the follow [mongodb](https://www.npmjs.com/package/mongodb) versions:
 - v3.6.3
 - v3.6.0
 - v3.5.10
