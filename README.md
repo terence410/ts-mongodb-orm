@@ -5,7 +5,7 @@
 
 [npm-image]: https://img.shields.io/npm/v/ts-mongodb-orm.svg
 [npm-url]: https://npmjs.org/package/ts-mongodb-orm
-[codecov-image]: https://img.shields.io/codecov/c/github/terence410/ts-mongodb-orm.svg?style=flat-square
+[codecov-image]: https://codecov.io/gh/terence410/ts-mongodb-orm/branch/develop/graph/badge.svg?token=7RDPRFYETS
 [codecov-url]: https://codecov.io/gh/terence410/ts-mongodb-orm
 
 The codes are well written in consistency and intuitive with respect to the original [mongodb](https://www.npmjs.com/package/mongodb) library. 
