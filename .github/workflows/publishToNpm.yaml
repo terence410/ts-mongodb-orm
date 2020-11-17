@@ -6,6 +6,10 @@ on:
     types: [published]
 
 env:
+  MONGODB_URI: ${{ secrets.MONGODB_URI }}
+  MONGODB_DB: "tsMongodbOrmTest"
+  MONGODB_DB_1: "tsMongodbOrmTest1"
+  MONGODB_DB_2: "tsMongodbOrmTest2"
   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
   CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
