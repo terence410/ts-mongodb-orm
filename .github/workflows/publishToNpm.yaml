@@ -23,6 +23,7 @@ jobs:
       - name: npm install build and test
         run: |
           npm install
+          npm run test:all
           npm run deploy:build
 
       - name: Upload code coverage
