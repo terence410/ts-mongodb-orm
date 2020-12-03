@@ -1,7 +1,6 @@
 import {config} from "dotenv";
 config();
 
-import {assert} from "chai";
 import {createConnection, MongoClientOptions, MongoError, TsMongodbOrmError} from "../src";
 
 const uri = process.env.MONGODB_URI as string;
@@ -30,13 +29,19 @@ export async function assertAsyncError(callback: () => void, options: {message: 
         throw new Error(`No error found. Expect to have an error with message: ${options.message}`);
     }
 
+    if (typeof error.message !== "string") {
+        throw new Error(`Error message is not a string`);
+    }
+
     if (options.errorType) {
         if (!(error instanceof options.errorType)) {
             throw new Error(`Expect to have an error with type ${options.errorType.name}`);
         }
     }
 
-    assert.match(error.message, options.message);
+    if (!error.message.match(options.message)) {
+        throw new Error(`Error message: ${error.message} expects to match with ${options.message} `);
+    }
 
     return error;
 }

@@ -27,8 +27,8 @@ jobs:
       - name: npm install build and test
         run: |
           npm install
+          npm run tsc:build
           npm run test:all
-          npm run deploy:build
 
       - name: Upload code coverage
         if: env.CODECOV_TOKEN != ''

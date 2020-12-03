@@ -39,5 +39,5 @@ jobs:
     - name: npm install, build and test
       run: |
         npm install
-        npm run deploy:build
+        npm run tsc:build
         npm run test:all
