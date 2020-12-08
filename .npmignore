@@ -7,3 +7,4 @@ tests
 tslint.json
 .nyc_output
 coverage
+.mocharc.js

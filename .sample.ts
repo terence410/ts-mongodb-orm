@@ -1,6 +1,3 @@
-import {config} from "dotenv";
-config();
-
 import {
     AfterLoad,
     BeforeDelete,
@@ -67,17 +64,17 @@ async function quickStartExample() {
     await repository.dropCollection();
 
     // documents operations
-    const document = new QuickStart();
-    document.stringValue = "hello world 1";
-    document.numberValue = 999;
+    const quickStart = new QuickStart();
+    quickStart.stringValue = "hello world 1";
+    quickStart.numberValue = 999;
 
-    await repository.insert(document);
-    await repository.update(document);
-    await repository.delete(document);
+    await repository.insert(quickStart);
+    await repository.update(quickStart);
+    await repository.delete(quickStart);
 
     // query
-    const findDocument1 = await repository.findOne(document._id);
-    const findDocument2 = await repository.query().filter("_id", document._id).findOne();
+    const findDocument1 = await repository.findOne(quickStart._id);
+    const findDocument2 = await repository.query().filter("_id", quickStart._id).findOne();
     const aggregate1 = await repository.aggregate().count("numberValue").findOne();
 
     // transaction
@@ -156,6 +153,7 @@ async function quickStartExample() {
             .getAsyncIterator();
 
         for await (const item of iterator) {
+            //
         }
 
         // find total
@@ -261,9 +259,11 @@ async function quickStartExample() {
         });
 
         stream.on("update", next => {
+            //
         });
 
         stream.on("delete", next => {
+            //
         });
 
         stream.on("change", next => {
@@ -403,5 +403,3 @@ async function bufferExample() {
         // true
     }
 }
-
-quickStartExample();
