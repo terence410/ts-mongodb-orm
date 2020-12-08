@@ -24,6 +24,9 @@ export function Document(documentMeta: Partial<IDocumentMeta> = {}) {
                 tsMongodbOrm.addDocumentField(target, fieldName, documentFieldMeta);
             }
 
+            // copy the hooks from subclass
+            tsMongodbOrm.mergeHooks(target, subClassTarget);
+
             // continue to findOne sub class
             subClassTarget = Object.getPrototypeOf(subClassTarget);
         }

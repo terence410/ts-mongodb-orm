@@ -2,6 +2,11 @@ import {Binary, MongoClientOptions, MongoError, ObjectID} from "mongodb";
 import {Connection} from "./Connection";
 import {Document} from "./decorators/Document";
 import {Field} from "./decorators/Field";
+import {AfterLoad} from "./decorators/hooks/AfterLoad";
+import {BeforeDelete} from "./decorators/hooks/BeforeDelete";
+import {BeforeInsert} from "./decorators/hooks/BeforeInsert";
+import {BeforeUpdate} from "./decorators/hooks/BeforeUpdate";
+import {BeforeUpsert} from "./decorators/hooks/BeforeUpsert";
 import {Index} from "./decorators/Index";
 import {mongodbDataTypes} from "./enums/mongodbDataTypes";
 import {TsMongodbOrmError} from "./errors/TsMongodbOrmError";
@@ -28,6 +33,11 @@ export {
     Document,
     Field,
     Index,
+    AfterLoad,
+    BeforeInsert,
+    BeforeUpsert,
+    BeforeUpdate,
+    BeforeDelete,
 
     // errors
     TsMongodbOrmError,

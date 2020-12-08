@@ -34,8 +34,7 @@ export class QueryAsyncIterator<TD extends IDocumentClass> {
 
                 let document!: InstanceType<TD>;
                 if (data) {
-                    document = new this.classObject() as InstanceType<TD>;
-                    Object.assign(document, data);
+                    document = tsMongodbOrm.loadEntity(this.classObject, data);
                 }
 
                 return { value: document, done: !data};

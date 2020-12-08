@@ -19,7 +19,7 @@ export class QueryUpdater<TD extends IDocumentClass, AD extends IDocumentInstanc
 
             // return a document
             if (mongodbResponse.value) {
-                return this.query.create(mongodbResponse.value);
+                return tsMongodbOrm.loadEntity(this.query.classObject, mongodbResponse.value);
             }
 
         } catch (err) {

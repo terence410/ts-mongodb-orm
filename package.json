@@ -15,6 +15,8 @@
     "test:compatibility": "mocha tests/compatibility.test.ts",
     "test:aggregate": "mocha tests/aggregate.test.ts",
     "test:capped": "mocha tests/capped.test.ts",
+    "test:schema": "mocha tests/schema.test.ts",
+    "test:hook": "mocha tests/hook.test.ts",
     "test:findOne": "mocha tests/findOne.test.ts",
     "test:watch": "mocha tests/watch.test.ts",
     "test:lockManager": "mocha tests/lockManager.test.ts",

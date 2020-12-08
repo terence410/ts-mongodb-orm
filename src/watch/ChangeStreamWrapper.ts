@@ -2,6 +2,7 @@
 
 import {EventEmitter} from "events";
 import {ChangeStream, Collection, MongoClient, MongoError} from "mongodb";
+import {tsMongodbOrm} from "../tsMongodbOrm";
 import {
     IChangeDeleteResult,
     IChangeOtherResult,
@@ -50,7 +51,7 @@ export class ChangeStreamWrapper<TD extends IDocumentClass> extends EventEmitter
 
     // this emit all kind of event
     private _onChange(changeEvent: any) {
-        const result =  this._parseChangeEvent(changeEvent);
+        const result = this._parseChangeEvent(changeEvent);
         if (result) {
             this.emit("change", result);
 
@@ -82,10 +83,10 @@ export class ChangeStreamWrapper<TD extends IDocumentClass> extends EventEmitter
 
     private _parseChangeEvent(changeEvent: any):
         IChangeSaveResult<InstanceType<TD>> | IChangeDeleteResult<InstanceType<TD>> | IChangeOtherResult | undefined {
+
         const {operationType, fullDocument, documentKey, ns} = changeEvent;
         if (operationType === "insert" || operationType === "update") {
-            const document = new this.classObject() as InstanceType<TD>;
-            Object.assign(document, fullDocument);
+            const document = tsMongodbOrm.loadEntity(this.classObject, fullDocument);
 
             return {
                 operationType,
@@ -106,6 +107,7 @@ export class ChangeStreamWrapper<TD extends IDocumentClass> extends EventEmitter
                 documentKey: undefined,
                 document: undefined,
             };
+
         }
 }
 

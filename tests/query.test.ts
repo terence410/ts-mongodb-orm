@@ -1,5 +1,5 @@
 import {assert} from "chai";
-import {Connection, Document, Field, Index, ObjectID, Repository, mongodbDataTypes} from "../src/";
+import {Connection, Document, Field, Index, mongodbDataTypes, ObjectID, Repository} from "../src/";
 // @ts-ignore
 import {addConnection} from "./share";
 

@@ -193,9 +193,13 @@ export class Repository<TD extends IDocumentClass> {
     public async createCollection(options: ICreateCollectionOptions = {}) {
         const db = this.getDb();
         const friendlyErrorStack = tsMongodbOrm.getFriendlyErrorStack();
+        const validation = tsMongodbOrm.getSchemaValidation(this.classObject);
 
         try {
             const collection = await db.createCollection(this.collectionName, {
+                validator: validation.validator,
+                validationAction: validation.validationAction,
+                validationLevel: validation.validationLevel,
                 capped: options.capped,
                 size: options.size,
                 max: options.max,
@@ -229,6 +233,26 @@ export class Repository<TD extends IDocumentClass> {
         return this.mongoClient.db(this.dbName).collection(this.collectionName);
     }
 
+    public async syncSchemaValidation() {
+        const db = this.getDb();
+        const friendlyErrorStack = tsMongodbOrm.getFriendlyErrorStack();
+        const validation = tsMongodbOrm.getSchemaValidation(this.classObject);
+
+        try {
+            const collection = await db.command({
+                collMod: this.collectionName,
+                validator: validation.validator || {},
+                validationAction: validation.validationAction || "error", // default
+                validationLevel: validation.validationLevel || "strict", // default
+            });
+
+            return validation;
+
+        } catch (err) {
+            throw Object.assign(err, friendlyErrorStack && {stack: updateStack(friendlyErrorStack, err)});
+        }
+    }
+
     public getDb() {
         return this.mongoClient.db(this.dbName);
     }
@@ -246,7 +270,7 @@ export class Repository<TD extends IDocumentClass> {
             const mongodbResponse = await collection.findOne(filter, options);
 
             if (mongodbResponse) {
-                return this.create(mongodbResponse);
+                return tsMongodbOrm.loadEntity(this.classObject, mongodbResponse);
             }
 
         } catch (err) {
@@ -321,6 +345,9 @@ export class Repository<TD extends IDocumentClass> {
         const collection = this.getCollection();
         const saveData = this._getSaveData(document);
 
+        // hook
+        tsMongodbOrm.runHookOfBeforeInsert(document);
+
         const friendlyErrorStack = tsMongodbOrm.getFriendlyErrorStack();
         try {
             const mongodbResponse = await collection.insertOne(saveData.$set, options);
@@ -338,6 +365,13 @@ export class Repository<TD extends IDocumentClass> {
         const collection = this.getCollection();
         const _id = document._id;
         const saveData: any = this._getSaveData(document);
+
+        // hook
+        if (options.upsert) {
+            tsMongodbOrm.runHookOfBeforeUpsert(document);
+        } else {
+            tsMongodbOrm.runHookOfBeforeUpdate(document);
+        }
 
         const friendlyErrorStack = tsMongodbOrm.getFriendlyErrorStack();
         try {
@@ -360,6 +394,11 @@ export class Repository<TD extends IDocumentClass> {
     public async delete(documentOrObjectId: any, options: IDeleteOptions = {}) {
         const collection = this.getCollection();
         const _id = (documentOrObjectId instanceof ObjectID) ? documentOrObjectId : documentOrObjectId._id;
+
+        // hook
+        if (!(documentOrObjectId instanceof ObjectID)) {
+            tsMongodbOrm.runHookOfBeforeDelete(documentOrObjectId);
+        }
 
         const friendlyErrorStack = tsMongodbOrm.getFriendlyErrorStack();
         try {

@@ -6,10 +6,14 @@ import {ChangeStreamWrapper} from "./watch/ChangeStreamWrapper";
 // region decorators
 
 export type IDocumentMeta = {
+    validationAction?: "warn" | "error",
+    validationLevel?: "off" | "strict" | "moderate",
     collectionName: string;
 };
 export type IDocumentFieldMeta = {
     expireAfterSeconds?: number;
+    isRequired?: boolean;
+    schema?: ISchema;
 };
 export type IIndexObject= {
     [key: string]: number | "text",
@@ -45,6 +49,47 @@ export type ICompareIndexResult = {
 };
 
 // endregion
+
+export type ISchemaBsonType = "double" | "string" | "object" | "array" | "binData" | "undefined" | "objectId" | "bool" |
+    "date" | "null" | "regex" | "dbPointer" | "javascript" | "symbol" | "javascriptWithScope" | "int" | "timestamp" |
+    "long" | "decimal" | "minKey" | "maxKey" ;
+export type ISchemaType = "object" | "array" | "number" | "boolean" | "string" | "null";
+export type ISchema = Partial<{
+    bsonType: ISchemaBsonType | ISchemaBsonType[],
+    enum: any[],
+    type: ISchemaType | ISchemaType[],
+    allOf: ISchema[],
+    anyOf: ISchema[],
+    oneOf: ISchema[],
+    not: ISchema,
+    multipleOf: number,
+    maximum: number,
+    exclusiveMaximum: boolean,
+    minimum: number,
+    exclusiveMinimum: boolean,
+    maxLength: number,
+    minLength: number,
+    pattern: RegExp | string,
+    maxProperties: number,
+    minProperties: number,
+    required: string[],
+    additionalProperties: boolean | {[key: string]: ISchema},
+    properties: {[key: string]: ISchema},
+    patternProperties: {[key: string]: RegExp | string },
+    dependencies: any,
+    additionalItems: boolean | {[key: string]: ISchema},
+    items: {[key: string]: ISchema} | ISchema[],
+    maxItems: number,
+    minItems: number,
+    uniqueItems: boolean,
+    title: string,
+    description: string,
+}>;
+export type IGetValidatorResult = {
+    validator?: object,
+    validationLevel?: "off" | "strict" | "moderate",
+    validationAction?: "warn" | "error",
+};
 
 // region connection & repository operations
 
@@ -94,8 +139,8 @@ export type IWeakTypeQueryUpdaterOptions<TD extends IDocumentClass> = {
 
 // region document operation
 
-export type IInsertOptions = {session?: ClientSession};
-export type IUpdateOptions = {session?: ClientSession, upsert?: boolean};
+export type IInsertOptions = {session?: ClientSession, bypassDocumentValidation?: boolean};
+export type IUpdateOptions = {session?: ClientSession, upsert?: boolean, bypassDocumentValidation?: boolean};
 export type IDeleteOptions = {session?: ClientSession};
 export type IQueryUpdaterUpdateOptions =  {upsert?: boolean};
 

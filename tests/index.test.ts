@@ -168,10 +168,8 @@ describe("Index Test", () => {
     }).timeout(65 * 1000);
 
     it("Check sync index works on different options", async () => {
-        // TODO:
-        // change ordering
-        // change to text
-        // change options (sparse, expireAfterSeconds, partialFilter)
+        // TODO: change ordering, change to text, change options (sparse, expireAfterSeconds, partialFilter)
+        //
     });
 
     it("Add unique index afterward", async () => {

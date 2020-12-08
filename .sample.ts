@@ -1,7 +1,24 @@
 import {config} from "dotenv";
 config();
 
-import { Binary, Connection, createConnection, Document, Field, Index, mongodbDataTypes, MongoError, ObjectID, tsMongodbOrm, TsMongodbOrmError} from "./src";
+import {
+    AfterLoad,
+    BeforeDelete,
+    BeforeInsert,
+    BeforeUpdate,
+    BeforeUpsert,
+    Binary,
+    Connection,
+    createConnection,
+    Document,
+    Field,
+    Index,
+    mongodbDataTypes,
+    MongoError,
+    ObjectID,
+    tsMongodbOrm,
+    TsMongodbOrmError,
+} from "./src";
 
 @Index({numberValue: -1})
 @Document({collectionName: "CustomCollectionName"}) // default to Class name
@@ -260,6 +277,69 @@ async function quickStartExample() {
         stream.on("close", () => {
             // steam is closed
         });
+    }
+
+    async function hookExample() {
+        @Document()
+        class HookDocument {
+            @Field()
+            public _id!: ObjectID;
+
+            @AfterLoad()
+            public afterLoad() {
+                // this won't await for promise
+            }
+
+            @BeforeUpsert()
+            @BeforeInsert()
+            @BeforeUpdate()
+            @BeforeDelete()
+            public before(type: string) { // type: afterLoad, upsert, insert, update, delete
+                // this won't await for promise
+            }
+        }
+
+        const repository1 = connection.getRepository(HookDocument);
+        const document1 = repository1.create();
+        await repository1.insert(document1);
+    }
+
+    async function schemaValidationExample() {
+        @Document()
+        class SchemaValidationDocument {
+            @Field()
+            public _id!: ObjectID;
+
+            @Field({isRequired: true, schema: {bsonType: "string"}})
+            public stringField?: string;
+
+            @Field({isRequired: true, schema: {bsonType: "date"}})
+            public dateField?: Date;
+
+            @Field({isRequired: true, schema: {type: "number", minimum: 10, exclusiveMinimum: true}})
+            public numberField?: number;
+
+            @Field({schema: {bsonType: "object", additionalProperties: true, properties: {name: {bsonType: "string"}}}})
+            public objectField?: any;
+        }
+
+        const repository1 = connection.getRepository(SchemaValidationDocument);
+
+        // this will also create collection with validation
+        await repository1.createCollection();
+
+        // or you can sync the validation later on (this need admin right)
+        await repository1.syncSchemaValidation();
+
+        // view existing validation
+        const options = await repository1.getCollection().options();
+
+        try {
+            const document1 = repository1.create();
+            await repository1.insert(document1);
+        } catch (err) {
+            // err.message === "Document failed validation"
+        }
     }
 
     async function errorExample() {

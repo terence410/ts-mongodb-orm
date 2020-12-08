@@ -17,9 +17,7 @@ export class QueryDeleter<TD extends IDocumentClass> {
 
             // return a document
             if (mongodbResponse.value) {
-                // prepare document
-                const document =  this.query.create();
-                Object.assign(document, mongodbResponse.value);
+                const document =  tsMongodbOrm.loadEntity(this.query.classObject, mongodbResponse.value);
                 return document;
             }
 

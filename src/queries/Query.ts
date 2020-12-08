@@ -38,12 +38,6 @@ export class Query<TD extends IDocumentClass, D extends IDocumentInstance = Inst
 
     // region public internal methods
 
-    public create(values: Partial<InstanceType<TD>> = {}): InstanceType<TD> {
-        const document = new this.classObject() as InstanceType<TD>;
-        Object.assign(document, values);
-        return document;
-    }
-
     /** @internal */
     public getCollection() {
         return this.mongoClient.db(this.dbName).collection(this.collectionName);
@@ -98,18 +92,14 @@ export class Query<TD extends IDocumentClass, D extends IDocumentInstance = Inst
             {session: this.session, skip: this._skip, limit: this._limit, sort: this._sort});
 
         const friendlyErrorStack = tsMongodbOrm.getFriendlyErrorStack();
-        let data: any;
         try {
-            data = await cursor.next();
+            const data = await cursor.next();
+            if (data) {
+                return tsMongodbOrm.loadEntity(this.classObject, data);
+            }
+
         } catch (err) {
             throw Object.assign(err, friendlyErrorStack && {stack: updateStack(friendlyErrorStack, err)});
-        }
-
-        // update the last request result
-        // this._lastRequestResult = mongodbQueryResult.update(cursor);
-
-        if (data) {
-            return this.create(data);
         }
     }
 
@@ -119,23 +109,19 @@ export class Query<TD extends IDocumentClass, D extends IDocumentInstance = Inst
             {session: this.session, skip: this._skip, limit: this._limit, sort: this._sort});
 
         const friendlyErrorStack = tsMongodbOrm.getFriendlyErrorStack();
-        let results!: any[];
         try {
-            results = await cursor.toArray();
+            const results = await cursor.toArray();
+            const documents: Array<InstanceType<TD>> = [];
+            for (const data of results) {
+                const document = tsMongodbOrm.loadEntity(this.classObject, data);
+                documents.push(document);
+            }
+
+            return documents;
+
         } catch (err) {
             throw Object.assign(err, friendlyErrorStack && {stack: updateStack(friendlyErrorStack, err)});
         }
-
-        // update the query result
-        // this._lastRequestResult = mongodbQueryResult.update(cursor);
-
-        // prepare documents
-        const documents: Array<InstanceType<TD>> = [];
-        for (const data of results) {
-            documents.push(this.create(data));
-        }
-
-        return documents;
     }
 
     public async count(): Promise<number> {

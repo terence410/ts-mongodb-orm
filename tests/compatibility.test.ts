@@ -1,7 +1,12 @@
 import { assert, expect } from "chai";
 import {Contains, Max, Min, validate} from "class-validator";
 import clone from "clone";
-import {Connection, Document, Field, ObjectID} from "../src";
+import {
+    Connection,
+    Document,
+    Field,
+    ObjectID
+} from "../src";
 // @ts-ignore
 import {addConnection} from "./share";
 
@@ -24,7 +29,6 @@ class CompatibilityTest {
 class CompatibilityExtendTest extends CompatibilityTest {
     @Field()
     public newValue: string = "";
-
 }
 
 describe("Compatibility Test", () => {
@@ -70,4 +74,3 @@ describe("Compatibility Test", () => {
         assert.deepEqual(findDocument, document);
     });
 });
-

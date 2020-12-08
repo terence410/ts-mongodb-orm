@@ -251,12 +251,9 @@ describe("Aggregate Test", () => {
     });
 
     it("indexStats", async () => {
-        // not able to test
-        await assertMongoError(async () => {
-            const result = await repository1.aggregate()
-                .indexStats()
-                .findOne();
-        }, /is not allowed/);
+        const result = await repository1.aggregate()
+            .indexStats()
+            .findOne();
     });
 
     it("limit", async () => {

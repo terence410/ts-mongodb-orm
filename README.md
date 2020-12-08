@@ -1,5 +1,7 @@
 # ts-mongodb-orm (Typescript Orm wrapper for Mongodb)
 
+ORM for MongoDB with 0 dependencies. Ready for production use. 
+
 [![NPM version][npm-image]][npm-url]
 [![Test coverage][codecov-image]][codecov-url]
 
@@ -318,6 +320,76 @@ async function watchExample() {
 
 ```
 
+# Example: Hook
+```typescript
+async function hookExample() {
+    @Document()
+    class HookDocument {
+        @Field()
+        public _id!: ObjectID;
+
+        @AfterLoad()
+        public afterLoad() {
+            // this won't await for promise
+        }
+
+        @BeforeUpsert()
+        @BeforeInsert()
+        @BeforeUpdate()
+        @BeforeDelete()
+        public before(type: string) { // type: afterLoad, upsert, insert, update, delete
+            // this won't await for promise
+        }
+    }
+
+    const repository1 = connection.getRepository(HookDocument);
+    const document1 = repository1.create();
+    await repository1.insert(document1);
+}
+```
+
+# Example: Schema Validation
+```typescript
+async function schemaValidationExample() {
+    @Document()
+    class SchemaValidationDocument {
+        @Field()
+        public _id!: ObjectID;
+
+        @Field({isRequired: true, schema: {bsonType: "string"}})
+        public stringField?: string;
+
+        @Field({isRequired: true, schema: {bsonType: "date"}})
+        public dateField?: Date;
+
+        @Field({isRequired: true, schema: {type: "number", minimum: 10, exclusiveMinimum: true}})
+        public numberField?: number;
+
+        @Field({schema: {bsonType: "object", additionalProperties: true, properties: {name: {bsonType: "string"}}}})
+        public objectField?: any;
+    }
+
+    const repository1 = connection.getRepository(SchemaValidationDocument);
+
+    // this will also create collection with validation
+    await repository1.createCollection();
+
+    // or you can sync the validation later on (this need admin right)
+    await repository1.syncSchemaValidation();
+
+    // view existing validation
+    const options = await repository1.getCollection().options();
+
+    try {
+        const document1 = repository1.create();
+        await repository1.insert(document1);
+    } catch (err) {
+        // err.message === "Document failed validation"
+    }
+}
+
+```
+
 # Example: Error
 ```typescript
 async function errorExample() {
@@ -401,12 +473,14 @@ Examples are in the [`tests/`](https://github.com/terence410/ts-mongodb-orm/tree
 | Transaction Manager | [source code](https://github.com/terence410/ts-mongodb-orm/blob/master/tests/transactionManager.test.ts) |
 | Watch | [source code](https://github.com/terence410/ts-mongodb-orm/blob/master/tests/watch.test.ts) |
 | Query | [source code](https://github.com/terence410/ts-mongodb-orm/blob/master/tests/query.test.ts) |
+| Hook | [source code](https://github.com/terence410/ts-mongodb-orm/blob/master/tests/hook.test.ts) |
+| Schema Validation | [source code](https://github.com/terence410/ts-mongodb-orm/blob/master/tests/schema.test.ts) |
 
 # Useful links
 - https://www.npmjs.com/package/mongodb
 - https://docs.mongodb.com/manual/
+- https://docs.mongodb.com/manual/core/schema-validation/
 
 # TODO
-- Complete query on geo
-- Support updating mongodb server side validation
+- Complete query on geo and text
 - Support collation

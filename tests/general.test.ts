@@ -1,5 +1,6 @@
 import { assert, expect } from "chai";
 import {Binary, Connection, Document, Field, Index, ObjectID, Repository} from "../src/";
+import {AfterLoad} from "../src/decorators/hooks/AfterLoad";
 // @ts-ignore
 import {addConnection, assertMongoError} from "./share";
 
@@ -38,6 +39,7 @@ class GeneralTest {
 
     @Field()
     public undefinedValue: undefined | number = undefined;
+
 }
 
 describe("General Test", () => {
@@ -202,6 +204,28 @@ describe("General Test", () => {
             .addToSet("arrayValue", 6, 5, 4)
             .findOneAndUpdate();
         assert.deepEqual(findDocument4!.arrayValue, [4, 3, 6, 5]);
+    });
+
+    it("atomic won't have any conflict", async () => {
+        const _id = ObjectID.createFromTime(new Date().getTime());
+        const total = 50;
+        const batch = 10;
+
+        for (let j = 0; j < batch; j++) {
+            const promises: Array<Promise<any>> = [];
+            for (let i = 0; i < total; i++) {
+                const promise = repository1.query()
+                    .filter("_id", _id)
+                    .getUpdater()
+                    .inc("numberValue", 1)
+                    .updateOne({upsert: true});
+                promises.push(promise);
+            }
+            await Promise.all(promises);
+        }
+
+        const findDocument = await repository1.findOne(_id);
+        assert.equal(findDocument!.numberValue, total * batch);
     });
 
     it("update document with atomic features (v2)", async () => {

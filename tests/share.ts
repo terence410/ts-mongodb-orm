@@ -2,6 +2,7 @@ import {config} from "dotenv";
 config();
 
 import {createConnection, MongoClientOptions, MongoError, TsMongodbOrmError} from "../src";
+import {updateStack} from "../src/utils";
 
 const uri = process.env.MONGODB_URI as string;
 const dbName = process.env.MONGODB_DB as string;
@@ -18,32 +19,34 @@ export const addConnection = async (options: {dbName?: string} = {}) => {
 };
 
 export async function assertAsyncError(callback: () => void, options: {message: RegExp, errorType?: any}) {
-    let error: Error | undefined;
+    let callbackError: Error | undefined;
+    const stack = new Error().stack;
+
     try {
         await callback();
     } catch (err) {
-        error = err;
+        callbackError = err;
     }
 
-    if (error === undefined) {
-        throw new Error(`No error found. Expect to have an error with message: ${options.message}`);
+    if (callbackError === undefined) {
+        throw Object.assign(new Error(`No error found. Expect to have an error with message: ${options.message}`), {stack});
     }
 
-    if (typeof error.message !== "string") {
-        throw new Error(`Error message is not a string`);
+    if (typeof callbackError.message !== "string") {
+        throw Object.assign(new Error(`Error message is not a string`), {stack});
     }
 
     if (options.errorType) {
-        if (!(error instanceof options.errorType)) {
-            throw new Error(`Expect to have an error with type ${options.errorType.name}`);
+        if (!(callbackError instanceof options.errorType)) {
+            throw Object.assign(new Error(`Expect to have an error with type ${options.errorType.name}`), {stack});
         }
     }
 
-    if (!error.message.match(options.message)) {
-        throw new Error(`Error message: ${error.message} expects to match with ${options.message} `);
+    if (!callbackError.message.match(options.message)) {
+        throw Object.assign(new Error(`Error message: ${callbackError.message} expects to match with ${options.message} `), {stack});
     }
 
-    return error;
+    return callbackError;
 }
 
 export async function assertTsMongodbOrmError(callback: () => void, message: RegExp) {
