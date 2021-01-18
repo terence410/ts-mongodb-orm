@@ -23,7 +23,7 @@ export class Aggregate<TD extends IDocumentClass, D extends IDocumentInstance = 
     public readonly classObject: TD;
     public readonly dbName: string;
     public readonly collectionName: string;
-    public readonly session?: ClientSession;
+    public readonly aggregateOptions: IAggregateOptions;
     public nativePipeline: Array<{[key: string]: any}>;
 
     constructor(options: IRepositoryOptions<TD>, aggregateOptions: IAggregateOptions = {}) {
@@ -31,8 +31,8 @@ export class Aggregate<TD extends IDocumentClass, D extends IDocumentInstance = 
         this.classObject = options.classObject;
         this.dbName = options.dbName;
         this.collectionName = options.collectionName;
+        this.aggregateOptions = aggregateOptions;
         this.nativePipeline = aggregateOptions.pipeline || [];
-        this.session = aggregateOptions.session;
     }
 
     // region public internal methods
@@ -247,8 +247,7 @@ export class Aggregate<TD extends IDocumentClass, D extends IDocumentInstance = 
     // region public methods
 
     public getAsyncIterator() {
-        const collection = this.getCollection();
-        const cursor = collection.aggregate(this.nativePipeline, {session: this.session});
+        const cursor = this._getCursor();
         return new AggregateAsyncIterator({cursor});
     }
 
@@ -297,7 +296,12 @@ export class Aggregate<TD extends IDocumentClass, D extends IDocumentInstance = 
 
     private _getCursor(): AggregationCursor {
         const collection = this.getCollection();
-        return collection.aggregate(this.nativePipeline, {session: this.session});
+        return collection.aggregate(this.nativePipeline, {
+            session: this.aggregateOptions.session,
+            allowDiskUse: this.aggregateOptions.allowDiskUse,
+            bypassDocumentValidation: this.aggregateOptions.bypassDocumentValidation,
+            maxTimeMS: this.aggregateOptions.maxTimeMS,
+        });
     }
 
     private _createPipeline(type: string, data: any): void {

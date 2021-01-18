@@ -179,7 +179,7 @@ async function queryExample() {
 ```typescript
 async function aggregateExample() {
     // iterator
-    const iterator = await repository.aggregate()
+    const iterator = await repository.aggregate({allowDiskUse: true, maxTimeMS: 5000})
         .match(x => x.filter("numberValue", 1))
         .project({_id: 1})
         .getAsyncIterator();

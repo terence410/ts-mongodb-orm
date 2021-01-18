@@ -110,11 +110,17 @@ export type IAggregateOptions = {
     weakType?: false,
     pipeline?: any[]
     session?: ClientSession,
+    allowDiskUse?: boolean;
+    maxTimeMS?: number;
+    bypassDocumentValidation?: boolean;
 };
 export type IWeakTypeAggregateOptions = {
     weakType: true,
     pipeline?: any[]
     session?: ClientSession,
+    allowDiskUse?: boolean;
+    maxTimeMS?: number;
+    bypassDocumentValidation?: boolean;
 };
 export type IQueryOptions<TD extends IDocumentClass> = {
     weakType?: false,

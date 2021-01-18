@@ -23,12 +23,12 @@ export class QueryOperator<D extends IDocumentInstance> {
 
     // region comparisons
 
-    public eq(value: IComparisonType): Pick<this, IComparisonKeys> {
+    public eq(value: IComparisonType | boolean): Pick<this, IComparisonKeys> {
         this.nativeQuery.$eq = value;
         return this;
     }
 
-    public ne(value: IComparisonType): Pick<this, IComparisonKeys> {
+    public ne(value: IComparisonType | boolean): Pick<this, IComparisonKeys> {
         this.nativeQuery.$ne = value;
         return this;
     }
