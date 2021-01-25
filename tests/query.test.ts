@@ -4,6 +4,7 @@ import {Connection, Document, Field, Index, mongodbDataTypes, ObjectID, Reposito
 import {addConnection} from "./share";
 
 @Index({name: 1, value: -1})
+@Index({stringValue: "text"})
 @Document()
 class QueryTest {
     @Field()
@@ -40,6 +41,7 @@ describe("Query Test", () => {
     before(async () => {
         connection = await addConnection();
         repository = connection.getRepository(QueryTest);
+        await repository.syncIndex();
 
         const promises = [];
         for (let i = 0; i < total; i++) {
@@ -240,6 +242,20 @@ describe("Query Test", () => {
     });
 
     it("text query", async () => {
-        // TODO: text query
+        const document = new QueryTest();
+        document.stringValue = "coffee shop apple";
+        await repository.insert(document);
+
+        const document1 = await repository.query().text("coffee apple").findOne();
+        assert.isDefined(document1);
+
+        const document2 = await repository.query().text("coff").findOne();
+        assert.isUndefined(document2);
+
+        const document3 = await repository.query().text("\"coffee shop\"").findOne();
+        assert.isDefined(document3);
+
+        const document4 = await repository.query().text("\"coffee apple\"").findOne();
+        assert.isUndefined(document4);
     });
 });
