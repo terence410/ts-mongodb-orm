@@ -204,6 +204,60 @@ describe("General Test", () => {
             .addToSet("arrayValue", 6, 5, 4)
             .findOneAndUpdate();
         assert.deepEqual(findDocument4!.arrayValue, [4, 3, 6, 5]);
+
+        // set
+        const findDocument5 = await query.getUpdater({weakType: true})
+            .set("dummy", "dummy")
+            .findOneAndUpdate();
+        assert.deepEqual((findDocument5 as any).dummy, "dummy");
+
+        // unset
+        const findDocument6 = await query.getUpdater({weakType: true})
+            .rename("dummy", "newDummy")
+            .findOneAndUpdate();
+        assert.deepEqual((findDocument6 as any).newDummy, "dummy");
+
+        // unset
+        const findDocument7 = await query.getUpdater({weakType: true})
+            .unset("newDummy")
+            .findOneAndUpdate();
+        assert.deepEqual((findDocument7 as any).newDummy, undefined);
+
+        const findDocument8 = await query.getUpdater()
+            .currentDate("dateValue")
+            .findOneAndUpdate();
+        assert.isTrue((findDocument8!.dateValue instanceof Date));
+
+        const findDocument9 = await query.getUpdater()
+            .min("numberValue", -100)
+            .findOneAndUpdate();
+        assert.equal(findDocument9!.numberValue, -100);
+
+        const findDocument10 = await query.getUpdater()
+            .max("numberValue", 100)
+            .findOneAndUpdate();
+        assert.equal(findDocument10!.numberValue, 100);
+
+        const findDocument11 = await query.getUpdater()
+            .mul("numberValue", 1.5)
+            .findOneAndUpdate();
+        assert.equal(findDocument11!.numberValue, 150);
+    });
+
+    it("insert on new", async () => {
+        const _id = ObjectID.createFromTime(new Date().getTime());
+        const query = repository1.query({query: {_id}});
+        const document1 = await query
+            .getUpdater()
+            .setOnInsert("stringValue", "upsert")
+            .findOneAndUpdate({upsert: true});
+        assert.equal(document1!.stringValue, "upsert");
+
+        const document2 = await query
+            .getUpdater()
+            .setOnInsert("stringValue", "upsert 2")
+            .findOneAndUpdate({upsert: true});
+        assert.equal(document2!.stringValue, "upsert"); // value not updated
     });
 
     it("atomic won't have any conflict", async () => {

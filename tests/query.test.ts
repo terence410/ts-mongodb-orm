@@ -3,7 +3,6 @@ import {Connection, Document, Field, Index, mongodbDataTypes, ObjectID, Reposito
 // @ts-ignore
 import {addConnection} from "./share";
 
-@Index({name: 1, value: -1})
 @Index({stringValue: "text"})
 @Document()
 class QueryTest {
@@ -257,5 +256,15 @@ describe("Query Test", () => {
 
         const document4 = await repository.query().text("\"coffee apple\"").findOne();
         assert.isUndefined(document4);
+    });
+
+    // explain will actually run the query and give you more details
+    it("explain", async () => {
+        const targetValue1 = 100;
+        const targetValue2 = 500;
+        const query = repository.query()
+            .filter("numberValue", x => x.gt(targetValue1).lte(targetValue2));
+        const explain = await query.explain();
+        assert.containsAllKeys(explain, ["queryPlanner", "executionStats"]);
     });
 });

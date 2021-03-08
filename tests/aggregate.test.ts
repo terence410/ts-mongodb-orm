@@ -413,11 +413,10 @@ describe("Aggregate Test", () => {
     });
 
     it("unionWith", async () => {
-        await assertMongoError(async () => {
-            const results = await repository1.aggregate()
-                .unionWith(anotherCollectionName)
-                .findMany();
-        }, /Unrecognized pipeline/);
+        const results = await repository1.aggregate()
+            .unionWith(anotherCollectionName)
+            .findMany();
+        assert.isArray(results);
     });
 
     it("unset", async () => {

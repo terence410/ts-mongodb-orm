@@ -7,16 +7,16 @@ import {addConnection} from "./share";
 const indexSyncTestCollectionName1 = "IndexSyncTest1";
 const indexSyncTestCollectionName2 = "IndexSyncTest2";
 
-@Index({preName: -1, textName: "text", sfterName: "text", aName: 1}, {sparse: true})
-@Index({name: 1, value: -1}, {})
-@Index({name: -1, value: 1}, {})
-@Index({newPartialName: -1}, {partialFilterExpression: { rating: { $gt: 5 } }})
-@Index({["array.field"]: -1}, {})
-@Index({["array.subField.$**"]: 1}, {})
-@Index({extraSparseName: -1}, {sparse: true})
-@Index({extraExpireName: -1}, {expireAfterSeconds: 10})
-@Index({extraUniqueName: 1}, {unique: true})
-@Index({uniqueName: 1}, {})
+@Index({preName: -1, textName: "text", sfterName: "text", aName: 1}, {sparse: true, explicit: false})
+@Index({name: 1, value: -1}, {explicit: false})
+@Index({name: -1, value: 1}, {explicit: false})
+@Index({newPartialName: -1}, {partialFilterExpression: { rating: { $gt: 5 } }, explicit: false})
+@Index({["array.field"]: -1}, {explicit: false})
+@Index({["array.subField.$**"]: 1}, {explicit: false})
+@Index({extraSparseName: -1}, {sparse: true, explicit: false})
+@Index({extraExpireName: -1}, {expireAfterSeconds: 10, explicit: false})
+@Index({extraUniqueName: 1}, {unique: true, explicit: false})
+@Index({uniqueName: 1}, {explicit: false})
 @Document()
 class IndexTest {
     @Field()
@@ -25,7 +25,7 @@ class IndexTest {
     @Field()
     public intValue: number = 0;
 
-    @Field()
+    @Field({})
     public numberValue: number = Math.random();
 }
 
@@ -69,6 +69,16 @@ class IndexAddTest2 {
     public date2: Date = new Date();
 }
 
+@Index({date2: 1})
+@Document()
+class IndexInline1 {
+    @Field()
+    public _id!: ObjectID;
+
+    @Field({index: -1, indexOptions: {unique: true}})
+    public date2: Date = new Date();
+}
+
 const total = 1000;
 const documents: IndexTest[] = [];
 
@@ -76,10 +86,11 @@ describe("Index Test", () => {
     let connection!: Connection;
     before(async () => { connection = await addConnection(); });
     after(async () =>  {
-        await connection.getRepository(IndexTest).dropCollection();
-        await connection.getRepository(IndexSyncTest).dropCollection();
-        await connection.getRepository(IndexSyncTest, {collectionName: indexSyncTestCollectionName2}).dropCollection();
-        await connection.getRepository(IndexAddTest1).dropCollection();
+        await connection.getRepository(IndexTest).dropCollection().catch(e => 0);
+        await connection.getRepository(IndexSyncTest).dropCollection().catch(e => 0);
+        await connection.getRepository(IndexSyncTest, {collectionName: indexSyncTestCollectionName2}).dropCollection().catch(e => 0);
+        await connection.getRepository(IndexAddTest1).dropCollection().catch(e => 0);
+        await connection.getRepository(IndexInline1).dropCollection().catch(e => 0);
         await connection.getRepository(IndexExpireTest).dropCollection().catch(e => 0);
         await connection.close();
     });
@@ -141,6 +152,18 @@ describe("Index Test", () => {
 
         // we add index via another repository
         await repository2.addIndex();
+        const compareResult2 = await repository1.compareIndex();
+        assert.equal(compareResult2.existingIndexes.length, 3);
+    });
+
+    it("inline index test", async () => {
+        const repository1 = connection.getRepository(IndexInline1);
+
+        const compareResult1 = await repository1.compareIndex();
+        assert.equal(compareResult1.existingIndexes.length, 1);
+        assert.equal(compareResult1.createIndexes.length, 2);
+
+        await repository1.addIndex();
         const compareResult2 = await repository1.compareIndex();
         assert.equal(compareResult2.existingIndexes.length, 3);
     });

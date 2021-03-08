@@ -1,8 +1,9 @@
 import { assert, expect } from "chai";
-import {Connection, Document, Field, ObjectID, Repository, tsMongodbOrm} from "../src";
+import {Connection, Document, Field, Index, ObjectID, Repository, tsMongodbOrm} from "../src";
 // @ts-ignore
 import {addConnection, assertMongoError, assertTsMongodbOrmError} from "./share";
 
+@Index({notExist: 1})
 @Document()
 class ErrorTest {
     @Field()
@@ -58,7 +59,7 @@ describe("Error Test", () => {
 
         await assertMongoError(async () => {
             await repository.createCollection({strict: true});
-        }, /a collection .* already exists/);
+        }, /Collection already exists/i);
     });
 
     it("document without _id", async () => {
@@ -99,5 +100,16 @@ describe("Error Test", () => {
         await assertTsMongodbOrmError(async () => {
             await repository.update(document1);
         }, /Document.* not exists for save./);
+    });
+
+    it("manage index that not exist", async () => {
+        const regex = /Index field: notExist not exists/;
+        await assertTsMongodbOrmError(async () => {
+            await repository.syncIndex();
+        }, regex);
+
+        await assertTsMongodbOrmError(async () => {
+            await repository.compareIndex();
+        }, regex);
     });
 });

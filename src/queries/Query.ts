@@ -1,8 +1,8 @@
 import {ClientSession, MongoClient} from "mongodb";
 import {tsMongodbOrm} from "../tsMongodbOrm";
 import {
-    IDocumentClass, IDocumentInstance,
-    IQueryOptions, IQueryUpdaterOptions, 
+    IDocumentClass, IDocumentInstance, IExplain,
+    IQueryOptions, IQueryUpdaterOptions,
     IRepositoryOptions,
     IWeakTypeQueryUpdaterOptions,
 } from "../types";
@@ -131,6 +131,19 @@ export class Query<TD extends IDocumentClass, D extends IDocumentInstance = Inst
         const friendlyErrorStack = tsMongodbOrm.getFriendlyErrorStack();
         try {
             return await cursor.count();
+
+        } catch (err) {
+            throw Object.assign(err, friendlyErrorStack && {stack: updateStack(friendlyErrorStack, err)});
+        }
+    }
+
+    public async explain(): Promise<IExplain> {
+        const collection = this.getCollection();
+        const cursor =  collection.find(this.nativeQuery, {session: this.session});
+
+        const friendlyErrorStack = tsMongodbOrm.getFriendlyErrorStack();
+        try {
+            return await cursor.explain() as IExplain;
 
         } catch (err) {
             throw Object.assign(err, friendlyErrorStack && {stack: updateStack(friendlyErrorStack, err)});

@@ -87,6 +87,24 @@ class TsMongodbOrm {
     }
 
     /** @internal */
+    public getDocumentIndexMetaList(target: object): IDocumentIndexMeta[] {
+        const list1 = tsMongodbOrm.documentIndexMetaListMap.get(target) || [];
+        const list2: IDocumentIndexMeta[] = [];
+        const documentFieldMetaList = this.getDocumentFieldMetaList(target);
+
+        for (const [key, documentFieldMeta] of Object.entries(documentFieldMetaList)) {
+            if (documentFieldMeta.index) {
+                list2.push({
+                    key: {[key]: documentFieldMeta.index},
+                    ...documentFieldMeta.indexOptions,
+                });
+            }
+        }
+
+        return [...list1, ...list2];
+    }
+
+    /** @internal */
     public getSchemaValidation(target: object): IGetValidatorResult {
         const documentFieldMetaList = this.getDocumentFieldMetaList(target);
         const documentMeta = this.getDocumentMeta(target);

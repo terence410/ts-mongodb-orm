@@ -14,6 +14,8 @@ export type IDocumentFieldMeta = {
     expireAfterSeconds?: number;
     isRequired?: boolean;
     schema?: ISchema;
+    index?: 1 | -1;
+    indexOptions?: IIndexOptions,
 };
 export type IIndexObject= {
     [key: string]: number | "text",
@@ -23,6 +25,7 @@ export type IIndexOptions= {
     expireAfterSeconds?: number,
     partialFilterExpression?: any,
     sparse?: boolean,
+    explicit?: boolean,
 };
 export type IDocumentIndexMeta = IIndexOptions & {
     key: IIndexObject,
@@ -199,6 +202,59 @@ export type ITransactionResult<T> = {
     value: T,
     hasCommitted: boolean,
     totalRetry: number,
+};
+
+// endregion
+
+// region query
+export type IExplain = {
+    queryPlanner: {
+        plannerVersion: null,
+        namespace: string
+        indexFilterSet: boolean,
+        parsedQuery: object,
+        winningPlan: {
+            stage: string,
+            filter: object,
+            direction: string,
+        },
+        rejectedPlans: object[],
+    },
+    executionStats: {
+        executionSuccess: boolean,
+        nReturned: number,
+        executionTimeMillis: number,
+        totalKeysExamined: number,
+        totalDocsExamined: number,
+        executionStages: {
+            stage: string,
+            filter: object[],
+            nReturned: number,
+            executionTimeMillisEstimate: number,
+            works: number,
+            advanced: number,
+            needTime: number,
+            needYield: number,
+            saveState: number,
+            restoreState: number,
+            isEOF: number,
+            direction: string,
+            docsExamined: number,
+        },
+        allPlansExecution: object[],
+    },
+    serverInfo: {
+        host: string,
+        port: number,
+        version: string,
+        gitVersion: string,
+    },
+    ok: number,
+    $clusterTime: {
+        clusterTime: object,
+        signature: object,
+    },
+    operationTime: object,
 };
 
 // endregion

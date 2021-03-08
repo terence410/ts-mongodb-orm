@@ -4,9 +4,39 @@ export class QueryBaseUpdater<D extends IDocumentInstance> {
     constructor(public nativeQuery: any = {}) {
     }
 
+    // region field update operations
+
     public set<K extends keyof D>(fieldName: K, value: D[K]) {
         this._createDefaultOperation("$set");
         this.nativeQuery.$set[fieldName] = value;
+
+        return this;
+    }
+
+    public setOnInsert<K extends keyof D>(fieldName: K, value: D[K]) {
+        this._createDefaultOperation("$setOnInsert");
+        this.nativeQuery.$setOnInsert[fieldName] = value;
+
+        return this;
+    }
+
+    public unset<K extends keyof D>(fieldName: K) {
+        this._createDefaultOperation("$unset");
+        this.nativeQuery.$unset[fieldName] = 1;
+
+        return this;
+    }
+
+    public rename<K extends keyof D>(fieldName: K, newFiledName: string) {
+        this._createDefaultOperation("$rename");
+        this.nativeQuery.$rename[fieldName] = newFiledName;
+
+        return this;
+    }
+
+    public currentDate<K extends keyof D>(fieldName: K) {
+        this._createDefaultOperation("$currentDate");
+        this.nativeQuery.$currentDate[fieldName] = { $type: "date" };
 
         return this;
     }
@@ -17,6 +47,31 @@ export class QueryBaseUpdater<D extends IDocumentInstance> {
 
         return this;
     }
+
+    public mul<K extends keyof D>(fieldName: K, value: number): this {
+        this._createDefaultOperation("$mul");
+        this.nativeQuery.$mul[fieldName] = value;
+
+        return this;
+    }
+
+    public min<K extends keyof D>(fieldName: K, value: number): this {
+        this._createDefaultOperation("$min");
+        this.nativeQuery.$min[fieldName] = value;
+
+        return this;
+    }
+
+    public max<K extends keyof D>(fieldName: K, value: number): this {
+        this._createDefaultOperation("$max");
+        this.nativeQuery.$max[fieldName] = value;
+
+        return this;
+    }
+
+    // endregion
+
+    // region array update operations
 
     public pushAt<K extends keyof D>(fieldName: K, position: number, ...value: any[]): this {
         this._createDefaultPush(fieldName);
@@ -61,8 +116,9 @@ export class QueryBaseUpdater<D extends IDocumentInstance> {
         this.nativeQuery.$push[fieldName].$slice = value;
 
         return this;
-
     }
+
+    // endregion
 
     // region private methods
 

@@ -57,7 +57,7 @@ class QuickStart {
     @Field()
     public booleanValue: boolean = false;
 
-    @Field()
+    @Field({index: -1})
     public dateValue: Date = new Date();
 
     @Field()

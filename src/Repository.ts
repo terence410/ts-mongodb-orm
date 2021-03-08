@@ -80,7 +80,7 @@ export class Repository<TD extends IDocumentClass> {
 
             // new index
             for (const createIndex of compareResult.createIndexes) {
-                const {key, ...params} = createIndex;
+                const {key, explicit, ...params} = createIndex;
                 await collection.createIndex(key, params);
             }
         } catch (err) {
@@ -101,9 +101,23 @@ export class Repository<TD extends IDocumentClass> {
         }
 
         // prepare results
-        const documentIndexMetaList = tsMongodbOrm.documentIndexMetaListMap.get(this.classObject) || [];
+        const documentIndexMetaList = tsMongodbOrm.getDocumentIndexMetaList(this.classObject);
+        const fieldNames = tsMongodbOrm.getFieldNames(this.classObject);
         const createIndexes: any[] = [];
         const dropIndexes: any[] = [];
+        
+        for (const documentIndexMeta of documentIndexMetaList) {
+            if (documentIndexMeta.explicit === false) {
+                continue;
+            }
+
+            for (const [key] of Object.entries(documentIndexMeta.key)) {
+                if (!fieldNames.includes(key)) {
+                    const err = new TsMongodbOrmError(`Index field: ${key} not exists. You can set strict: false to by pass this runtime checking.`);
+                    throw Object.assign(err, friendlyErrorStack && {stack: updateStack(friendlyErrorStack, err)});
+                }
+            }
+        }
 
         // check extra Index from server
         for (const serverIndex of existingServerIndexes) {
@@ -318,6 +332,26 @@ export class Repository<TD extends IDocumentClass> {
         return document;
     }
 
+    public async insert(document: InstanceType<TD>, options: IInsertOptions = {}) {
+        const collection = this.getCollection();
+        const saveData = this._getSaveData(document);
+
+        // hook
+        tsMongodbOrm.runHookOfBeforeInsert(document);
+
+        const friendlyErrorStack = tsMongodbOrm.getFriendlyErrorStack();
+        try {
+            const mongodbResponse = await collection.insertOne(saveData.$set, options);
+
+            // update the id
+            document._id = mongodbResponse.insertedId;
+            return document;
+
+        } catch (err) {
+            throw Object.assign(err, friendlyErrorStack && {stack: updateStack(friendlyErrorStack, err)});
+        }
+    }
+
     public async insertMany(documents: Array<InstanceType<TD>>, options?: IInsertOptions): Promise<Array<InstanceType<TD>>> {
         const collection = this.getCollection();
 
@@ -335,26 +369,6 @@ export class Repository<TD extends IDocumentClass> {
             }
 
             return documents;
-
-        } catch (err) {
-            throw Object.assign(err, friendlyErrorStack && {stack: updateStack(friendlyErrorStack, err)});
-        }
-    }
-
-    public async insert(document: InstanceType<TD>, options: IInsertOptions = {}) {
-        const collection = this.getCollection();
-        const saveData = this._getSaveData(document);
-
-        // hook
-        tsMongodbOrm.runHookOfBeforeInsert(document);
-
-        const friendlyErrorStack = tsMongodbOrm.getFriendlyErrorStack();
-        try {
-            const mongodbResponse = await collection.insertOne(saveData.$set, options);
-
-            // update the id
-            document._id = mongodbResponse.insertedId;
-            return document;
 
         } catch (err) {
             throw Object.assign(err, friendlyErrorStack && {stack: updateStack(friendlyErrorStack, err)});
