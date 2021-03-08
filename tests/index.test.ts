@@ -1,4 +1,5 @@
 import { assert, expect } from "chai";
+import {Test} from "mocha";
 import {Connection, Document, Field, Index, ObjectID} from "../src/";
 import {timeout} from "../src/utils";
 // @ts-ignore
@@ -79,6 +80,19 @@ class IndexInline1 {
     public date2: Date = new Date();
 }
 
+@Index({a: 1, b: 1})
+@Document()
+class TestExplain {
+    @Field()
+    public _id!: ObjectID;
+
+    @Field({index: 1})
+    public a: number = 0;
+
+    @Field({index: -1})
+    public b: number = 0;
+}
+
 const total = 1000;
 const documents: IndexTest[] = [];
 
@@ -92,6 +106,7 @@ describe("Index Test", () => {
         await connection.getRepository(IndexAddTest1).dropCollection().catch(e => 0);
         await connection.getRepository(IndexInline1).dropCollection().catch(e => 0);
         await connection.getRepository(IndexExpireTest).dropCollection().catch(e => 0);
+        await connection.getRepository(TestExplain).dropCollection().catch(e => 0);
         await connection.close();
     });
 
@@ -166,6 +181,33 @@ describe("Index Test", () => {
         await repository1.addIndex();
         const compareResult2 = await repository1.compareIndex();
         assert.equal(compareResult2.existingIndexes.length, 3);
+    });
+
+    it("check explain", async () => {
+        const repository1 = connection.getRepository(TestExplain);
+        await repository1.addIndex();
+        const batch = 30;
+        const limit = 10;
+
+        for (let a = 0; a < batch; a++) {
+            const allDocuments = Array(batch).fill(0).map((x, b) => repository1.create({a, b}));
+            await repository1.insertMany(allDocuments);
+        }
+
+        const totalDocuments = await repository1.query().count();
+        assert.equal(totalDocuments, batch * batch);
+
+        const query1 = repository1.query().sort("a", 1).sort("b", 1).limit(limit);
+        const explain1 = await query1.explain();
+        assert.equal(explain1.executionStats.totalDocsExamined, limit);
+
+        const query2 = repository1.query().sort("a", 1).sort("b", -1).limit(limit);
+        const explain2 = await query2.explain();
+        assert.equal(explain2.executionStats.totalDocsExamined, totalDocuments);
+
+        const query3 = repository1.query().sort("a", -1).limit(10);
+        const explain3 = await query3.explain();
+        assert.equal(explain3.executionStats.totalDocsExamined, limit);
     });
 
     // the mongodb probably will do clean up every 60 seconds

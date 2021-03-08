@@ -139,7 +139,8 @@ export class Query<TD extends IDocumentClass, D extends IDocumentInstance = Inst
 
     public async explain(): Promise<IExplain> {
         const collection = this.getCollection();
-        const cursor =  collection.find(this.nativeQuery, {session: this.session});
+        const cursor = collection.find(this.nativeQuery,
+            {session: this.session, skip: this._skip, limit: this._limit, sort: this._sort});
 
         const friendlyErrorStack = tsMongodbOrm.getFriendlyErrorStack();
         try {
