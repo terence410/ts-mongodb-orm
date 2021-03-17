@@ -42,7 +42,7 @@
     "typescript": "^3.9.2"
   },
   "author": "Terence",
-  "license": "MIT License",
+  "license": "MIT",
   "keywords": [
     "mongo",
     "mongodb",

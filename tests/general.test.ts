@@ -359,11 +359,10 @@ describe("General Test", () => {
     });
 
     it("new many and query by cursor", async () => {
-        const total = 300;
-        const limit = 100;
-        for (let i = 0; i < total; i++) {
-            await repository1.insert(new GeneralTest());
-        }
+        const total = 50;
+        const limit = 30;
+        const newDocuments = Array(total).fill(0).map((x, i) => repository1.create({numberValue: i}));
+        await repository1.insertMany(newDocuments);
 
         // get iterator
         const iterator = repository1.query()
