@@ -2,7 +2,6 @@ import {config} from "dotenv";
 config();
 
 import {createConnection, MongoClientOptions, MongoError, TsMongodbOrmError} from "../src";
-import {updateStack} from "../src/utils";
 
 const uri = process.env.MONGODB_URI as string;
 const dbName = process.env.MONGODB_DB as string;

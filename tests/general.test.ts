@@ -358,7 +358,7 @@ describe("General Test", () => {
         }
     });
 
-    it.only("new many and query by cursor", async () => {
+    it("new many and query by cursor", async () => {
         const total = 300;
         const limit = 100;
         for (let i = 0; i < total; i++) {
