@@ -6,8 +6,8 @@
   "types": "build/index.d.ts",
   "scripts": {
     "test:all": "nyc --reporter=json --reporter=text mocha tests/*.test.ts",
-    "test:activeRecord": "mocha tests/activeRecord.test.ts",
     "test:general": "mocha tests/general.test.ts",
+    "test:activeRecord": "mocha tests/activeRecord.test.ts",
     "test:query": "mocha tests/query.test.ts",
     "test:transactionManager": "mocha tests/transactionManager.test.ts",
     "test:index": "mocha tests/index.test.ts",

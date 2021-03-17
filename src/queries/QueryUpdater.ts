@@ -1,5 +1,12 @@
 import {tsMongodbOrm} from "../tsMongodbOrm";
-import {IDocumentClass, IDocumentInstance, IQueryUpdaterOptions, IQueryUpdaterUpdateOptions} from "../types";
+import {
+    IDocumentClass,
+    IDocumentInstance,
+    IFindOneAndUpdateOptions,
+    IQueryUpdaterOptions,
+    IUpdateManyOptions,
+    IUpdateOneOptions,
+} from "../types";
 import {updateStack} from "../utils";
 import {Query} from "./Query";
 import {QueryBaseUpdater} from "./QueryBaseUpdater";
@@ -9,7 +16,7 @@ export class QueryUpdater<TD extends IDocumentClass, AD extends IDocumentInstanc
         super(options.query);
     }
 
-    public async findOneAndUpdate(options: IQueryUpdaterUpdateOptions = {}): Promise<InstanceType<TD> | undefined> {
+    public async findOneAndUpdate(options: IFindOneAndUpdateOptions = {}): Promise<InstanceType<TD> | undefined> {
         const collection = this.query.getCollection();
 
         const friendlyErrorStack = tsMongodbOrm.getFriendlyErrorStack();
@@ -28,7 +35,7 @@ export class QueryUpdater<TD extends IDocumentClass, AD extends IDocumentInstanc
 
     }
 
-    public async updateOne(options: IQueryUpdaterUpdateOptions = {}): Promise<number> {
+    public async updateOne(options: IUpdateOneOptions = {}): Promise<number> {
         const collection = this.query.getCollection();
 
         const friendlyErrorStack = tsMongodbOrm.getFriendlyErrorStack();
@@ -42,7 +49,7 @@ export class QueryUpdater<TD extends IDocumentClass, AD extends IDocumentInstanc
         }
     }
 
-    public async updateMany(options: IQueryUpdaterUpdateOptions = {}): Promise<number> {
+    public async updateMany(options: IUpdateManyOptions = {}): Promise<number> {
         const collection = this.query.getCollection();
 
         const friendlyErrorStack = tsMongodbOrm.getFriendlyErrorStack();

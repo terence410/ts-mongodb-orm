@@ -11,7 +11,7 @@ import {
     IDeleteOptions,
     IDocumentClass,
     IDocumentIndexMeta,
-    IDocumentObject, IInsertOptions,
+    IDocumentObject, IInsertManyOptions, IInsertOptions,
     IObject,
     IQueryOptions,
     IRepositoryOptions,
@@ -279,6 +279,10 @@ export class Repository<TD extends IDocumentClass> {
                          options: {session?: ClientSession} = {}): Promise<InstanceType<TD> | undefined> {
         const collection = this.getCollection();
 
+        if (typeof filter !== "object") {
+            throw new TsMongodbOrmError(`filter must be in the type of object.`);
+        }
+
         const friendlyErrorStack = tsMongodbOrm.getFriendlyErrorStack();
         try {
             const mongodbResponse = await collection.findOne(filter, options);
@@ -352,7 +356,7 @@ export class Repository<TD extends IDocumentClass> {
         }
     }
 
-    public async insertMany(documents: Array<InstanceType<TD>>, options?: IInsertOptions): Promise<Array<InstanceType<TD>>> {
+    public async insertMany(documents: Array<InstanceType<TD>>, options?: IInsertManyOptions): Promise<Array<InstanceType<TD>>> {
         const collection = this.getCollection();
 
         const setList: any[] = [];
@@ -371,6 +375,11 @@ export class Repository<TD extends IDocumentClass> {
             return documents;
 
         } catch (err) {
+            if (Array.isArray(err.result.result.insertedIds)) {
+                err.result.result.insertedIds.forEach((x: any, i: number) => {
+                    documents[i]._id = x._id;
+                });
+            }
             throw Object.assign(err, friendlyErrorStack && {stack: updateStack(friendlyErrorStack, err)});
         }
     }

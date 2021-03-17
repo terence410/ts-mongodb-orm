@@ -358,14 +358,16 @@ describe("General Test", () => {
         }
     });
 
-    it("new many and query by cursor", async () => {
-        const total = 100;
+    it.only("new many and query by cursor", async () => {
+        const total = 300;
+        const limit = 100;
         for (let i = 0; i < total; i++) {
             await repository1.insert(new GeneralTest());
         }
 
         // get iterator
         const iterator = repository1.query()
+            .limit(limit)
             .getAsyncIterator();
 
         // get all documents
@@ -374,11 +376,49 @@ describe("General Test", () => {
             documents.push(document);
         }
 
-        assert.isAtLeast(documents.length, total);
+        assert.isAtLeast(documents.length, limit);
     });
 
     it("delete all documents", async () => {
         const deletedTotal = await repository1.query().getDeleter().deleteMany();
         assert.isAtLeast(deletedTotal, 1);
+    });
+
+    it("options: ordered", async () => {
+        const [document1] = await repository1.insertMany([repository1.create()]);
+        const document2 = await repository1.insert(repository1.create());
+        const document2a = repository1.create({_id: document1._id});
+        const document2b = repository1.create({_id: ObjectID.createFromTime(new Date().getTime())});
+        const document2c = repository1.create({_id: document2._id});
+        const document2d = repository1.create();
+
+        const error1 = await assertMongoError(() => {
+            return repository1.insertMany([document2a, document2b, document2c, document2d]);
+        }, /duplicate key error/);
+        // only got 1 write error
+        assert.equal((error1 as any).writeErrors.length, 1);
+
+        // document not created
+        const findDocument2b = await repository1.findOne(document2b._id);
+        assert.isUndefined(findDocument2b);
+
+        // id exist but document not created
+        assert.isDefined(document2d._id);
+        const findDocument2d = await repository1.findOne(document2d._id);
+        assert.isUndefined(findDocument2d);
+
+        const error2 = await assertMongoError(() => {
+            return repository1.insertMany([document2a, document2b, document2c, document2d], {ordered: false});
+        }, /duplicate key error/);
+        // we got 2 write error
+        assert.equal((error2 as any).writeErrors.length, 2);
+
+        // document created
+        const findDocument2bAgain = await repository1.findOne(document2b._id);
+        assert.isDefined(findDocument2bAgain);
+
+        // document created
+        const findDocument2dAgain = await repository1.findOne(document2d._id);
+        assert.isDefined(findDocument2dAgain);
     });
 });

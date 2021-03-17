@@ -82,7 +82,8 @@ export class Query<TD extends IDocumentClass, D extends IDocumentInstance = Inst
 
     public getAsyncIterator() {
         const collection = this.getCollection();
-        const cursor = collection.find(this.nativeQuery, {session: this.session});
+        const cursor = collection.find(this.nativeQuery,
+            {session: this.session, skip: this._skip, limit: this._limit, sort: this._sort});
         return new QueryAsyncIterator({classObject: this.classObject, cursor});
     }
 

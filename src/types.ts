@@ -1,6 +1,15 @@
 /* tslint:disable:ban-types */
 import {EventEmitter} from "events";
-import {ClientSession, FilterQuery, MongoClient, MongoError, TransactionOptions, UpdateQuery} from "mongodb";
+import {
+    ClientSession,
+    CollectionInsertManyOptions, CollectionInsertOneOptions, CommonOptions,
+    FilterQuery,
+    FindOneAndUpdateOption,
+    MongoClient,
+    MongoError,
+    TransactionOptions, UpdateManyOptions, UpdateOneOptions,
+    UpdateQuery
+} from "mongodb";
 import {ChangeStreamWrapper} from "./watch/ChangeStreamWrapper";
 
 // region decorators
@@ -14,11 +23,11 @@ export type IDocumentFieldMeta = {
     expireAfterSeconds?: number;
     isRequired?: boolean;
     schema?: ISchema;
-    index?: 1 | -1;
+    index?: 1 | -1 | "text";
     indexOptions?: IIndexOptions,
 };
 export type IIndexObject= {
-    [key: string]: number | "text",
+    [key: string]: 1 | -1 | "text",
 };
 export type IIndexOptions= {
     unique?: boolean,
@@ -148,10 +157,14 @@ export type IWeakTypeQueryUpdaterOptions<TD extends IDocumentClass> = {
 
 // region document operation
 
-export type IInsertOptions = {session?: ClientSession, bypassDocumentValidation?: boolean};
-export type IUpdateOptions = {session?: ClientSession, upsert?: boolean, bypassDocumentValidation?: boolean};
-export type IDeleteOptions = {session?: ClientSession};
-export type IQueryUpdaterUpdateOptions =  {upsert?: boolean};
+export type IInsertOptions = CollectionInsertOneOptions;
+export type IInsertManyOptions = CollectionInsertManyOptions;
+export type IUpdateOptions = UpdateOneOptions;
+export type IDeleteOptions = CommonOptions & { bypassDocumentValidation?: boolean };
+export type IDeleteManyOptions = CommonOptions;
+export type IFindOneAndUpdateOptions =  FindOneAndUpdateOption<any>;
+export type IUpdateOneOptions =  UpdateOneOptions;
+export type IUpdateManyOptions =  UpdateManyOptions;
 
 // endregion
 

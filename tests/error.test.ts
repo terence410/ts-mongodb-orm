@@ -112,4 +112,10 @@ describe("Error Test", () => {
             await repository.compareIndex();
         }, regex);
     });
+
+    it("findOne, findMany must provide object", async () => {
+        await assertTsMongodbOrmError(async () => {
+            await repository.findOne(1 as any);
+        }, /filter must be in the type of object./);
+    });
 });

@@ -9,17 +9,17 @@ interface IAsyncIterator<T> {
     next(value?: any): Promise<IteratorResult<T>>;
 }
 
+// Remarks: considering support batch size
 export class QueryAsyncIterator<TD extends IDocumentClass> {
     public readonly cursor: Cursor;
     public readonly classObject: TD;
 
-    constructor(options: { classObject: TD, cursor: Cursor }) {
+    constructor(options: { classObject: TD, cursor: Cursor}) {
         this.cursor = options.cursor;
         this.classObject = options.classObject;
     }
 
     public [Symbol.asyncIterator](): IAsyncIterator<InstanceType<TD>> {
-
         return {
             next: async () => {
                 // findOne next

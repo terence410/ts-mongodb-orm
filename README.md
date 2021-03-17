@@ -456,7 +456,6 @@ async function bufferExample() {
 }
 ```
 
-
 # More Detailed Examples
 Examples are in the [`tests/`](https://github.com/terence410/ts-mongodb-orm/tree/master/tests) directory.
 
