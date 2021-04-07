@@ -1,13 +1,14 @@
 import {MongoClient} from "mongodb";
 import {TsMongodbOrmError} from "./errors/TsMongodbOrmError";
 import {LockManager} from "./locks/LockManager";
+import {RankManager} from "./ranks/RankManager";
 import {Repository} from "./Repository";
 import {TransactionManager} from "./transactions/TransactionManager";
 import {tsMongodbOrm} from "./tsMongodbOrm";
 import {
     IConnectionOptions,
     IDocumentClass,
-    IGetLockManagerOptions,
+    IGetLockManagerOptions, IGetRankManagerOptions,
     IGetRepositoryOptions,
     IGetTransactionManagerOptions,
 } from "./types";
@@ -66,6 +67,19 @@ export class Connection {
             expiresIn: 1000,
             maxRetry: 0,
             retryDelay: 0,
+        }, options));
+    }
+
+    public getRankManager<T extends any>(options: IGetRankManagerOptions) {
+        return new RankManager(Object.assign({
+            mongoClient: this.mongoClient,
+            skipTransaction: !!options.skipTransaction,
+            transaction: {
+                maxRetry: options.transaction?.maxRetry || -1,
+                transactionOptions: options.transaction?.transactionOptions || {},
+            },
+            dbName: this.dbName,
+            collectionName: "Rank",
         }, options));
     }
 }

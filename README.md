@@ -469,6 +469,7 @@ Examples are in the [`tests/`](https://github.com/terence410/ts-mongodb-orm/tree
 | Error | [source code](https://github.com/terence410/ts-mongodb-orm/blob/master/tests/error.test.ts) |
 | Index | [source code](https://github.com/terence410/ts-mongodb-orm/blob/master/tests/index.test.ts) |
 | LockManager | [source code](https://github.com/terence410/ts-mongodb-orm/blob/master/tests/lockManager.test.ts) |
+| RankManager | [source code](https://github.com/terence410/ts-mongodb-orm/blob/master/tests/rankManager.test.ts) |
 | Transaction Manager | [source code](https://github.com/terence410/ts-mongodb-orm/blob/master/tests/transactionManager.test.ts) |
 | Watch | [source code](https://github.com/terence410/ts-mongodb-orm/blob/master/tests/watch.test.ts) |
 | Query | [source code](https://github.com/terence410/ts-mongodb-orm/blob/master/tests/query.test.ts) |

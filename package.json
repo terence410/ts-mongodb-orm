@@ -20,6 +20,7 @@
     "test:findOne": "mocha tests/findOne.test.ts",
     "test:watch": "mocha tests/watch.test.ts",
     "test:lockManager": "mocha tests/lockManager.test.ts",
+    "test:rankManager": "mocha tests/rankManager.test.ts",
     "--- deploy ---": "",
     "tsc:build": "tsc --build --clean && tsc",
     "npm:patch": "npm version patch"

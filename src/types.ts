@@ -295,6 +295,26 @@ export type ILockResult<T> = {
 
 // endregion
 
+// region rank
+export type IGetRankManagerOptions = {
+    dbName?: string
+    collectionName?: string,
+    skipTransaction?: boolean,
+    transaction?: {
+        transactionOptions: TransactionOptions,
+        maxRetry: number,
+    },
+    minScore: number,
+    maxScore: number,
+    branchFactor: number,
+};
+
+export type IRankManagerOptions = Required<IGetRankManagerOptions> & IGetRankManagerOptions & {
+    mongoClient: MongoClient;
+};
+
+// endregion
+
 // region utils
 
 export type PropType<T, K extends keyof T> = T[K];
