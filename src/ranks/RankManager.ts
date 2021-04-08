@@ -53,7 +53,7 @@ export class RankManager {
         await this._validate({score});
 
         const documentMetaList: IDocumentMeta[] = [];
-        this.getSaveDocumentMetaList(this.minScore, this.maxScore, 0, score, documentMetaList);
+        this._getSaveDocumentMetaList(this.minScore, this.maxScore, 0, score, documentMetaList);
 
         const repository = this.getRepository();
         await this._runWithTransaction(async session => {
@@ -81,12 +81,11 @@ export class RankManager {
         await this._validate({score});
 
         const documentMetaList: IDocumentMeta[] = [];
-        this.getSaveDocumentMetaList(this.minScore, this.maxScore, 0, score, documentMetaList);
+        this._getSaveDocumentMetaList(this.minScore, this.maxScore, 0, score, documentMetaList);
 
         const repository = this.getRepository();
         await this._runWithTransaction(async session => {
-            const promises: any[] = [];
-
+            // check if scores exist
             const documents = await repository
                 .query()
                 .filter("_id", x => x.in(documentMetaList.map(y => y._id)))
@@ -94,6 +93,8 @@ export class RankManager {
             
             for (const documentMeta of documentMetaList) {
                 const document = documents.find(x => x._id === documentMeta._id);
+
+                // throw error with invalid score
                 if (!document) {
                     throw new TsMongodbOrmError(`No such score: ${score}`);
                 }
@@ -105,6 +106,7 @@ export class RankManager {
                 }
             }
 
+            const promises: any[] = [];
             for (const documentMeta of documentMetaList) {
                 const query = repository.query()
                     .filter("_id", documentMeta._id);
@@ -128,7 +130,7 @@ export class RankManager {
         await this._validate({score});
 
         const documentMetaList: IDocumentMeta[] = [];
-        this.getSaveDocumentMetaList(this.minScore, this.maxScore, 0, score, documentMetaList);
+        this._getSaveDocumentMetaList(this.minScore, this.maxScore, 0, score, documentMetaList);
 
         // we must able to find one
         const documentMeta = documentMetaList.find(x => x.fields.some(y => y.start === score && y.end === score))!;
@@ -145,7 +147,7 @@ export class RankManager {
         await this._validate({score});
 
         const documentMetaList: IDocumentMeta[] = [];
-        this.getRankDocumentMetaList(this.minScore, this.maxScore, 0, score, documentMetaList);
+        this._getRankDocumentMetaList(this.minScore, this.maxScore, 0, score, documentMetaList);
 
         const repository = this.getRepository();
         const documentIds = documentMetaList.filter(x => x.fields.length).map(x => x._id);
@@ -205,7 +207,9 @@ export class RankManager {
 
     }
 
-    private getSaveDocumentMetaList(start: number, end: number, layer: number, score: number, documentMetaList: IDocumentMeta[]) {
+    // region private methods
+
+    private _getSaveDocumentMetaList(start: number, end: number, layer: number, score: number, documentMetaList: IDocumentMeta[]) {
         const rankMeta = this._getRankMeta(start, end, layer);
         const documentMeta: IDocumentMeta = {
             _id: rankMeta.documentId,
@@ -218,14 +222,14 @@ export class RankManager {
                 documentMeta.fields.push({fieldName: field.fieldName, start: field.start, end: field.end});
 
                 if (field.hasChild) {
-                    this.getSaveDocumentMetaList(field.start, field.end, rankMeta.layer + 1, score, documentMetaList);
+                    this._getSaveDocumentMetaList(field.start, field.end, rankMeta.layer + 1, score, documentMetaList);
 
                 }
             }
         }
     }
 
-    private getRankDocumentMetaList(start: number, end: number, layer: number, score: number, documentMetaList: IDocumentMeta[]) {
+    private _getRankDocumentMetaList(start: number, end: number, layer: number, score: number, documentMetaList: IDocumentMeta[]) {
         const rankMeta = this._getRankMeta(start, end, layer);
         const documentMeta: IDocumentMeta = {
             _id: rankMeta.documentId,
@@ -239,13 +243,11 @@ export class RankManager {
 
             } else if (score >= field.start) {
                 if (field.hasChild) {
-                    this.getRankDocumentMetaList(field.start, field.end, rankMeta.layer + 1, score, documentMetaList);
+                    this._getRankDocumentMetaList(field.start, field.end, rankMeta.layer + 1, score, documentMetaList);
                 }
             }
         }
     }
-
-    // region private methods
 
     private async _validate(options: {score?: number, rank?: number} = {}) {
         if (typeof options.rank === "number") {
