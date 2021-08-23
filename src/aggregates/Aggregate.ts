@@ -133,7 +133,7 @@ export class Aggregate<TD extends IDocumentClass, D extends IDocumentInstance = 
     }
 
     // tested
-    public lookup(options: {from: string, let?: IMapExpression, pipeline?: any[], as: string}) {
+    public lookup(options: {from: string, as: string, localField?: string, foreignField?: string, let?: IMapExpression, pipeline?: any[], }) {
         this._createPipeline("$lookup", options);
         return this;
     }
@@ -246,9 +246,9 @@ export class Aggregate<TD extends IDocumentClass, D extends IDocumentInstance = 
 
     // region public methods
 
-    public getAsyncIterator() {
+    public getAsyncIterator<R extends {[key: string]: any}>() {
         const cursor = this._getCursor();
-        return new AggregateAsyncIterator({cursor});
+        return new AggregateAsyncIterator<R>({cursor});
     }
 
     public async explain(): Promise<any> {
@@ -262,7 +262,7 @@ export class Aggregate<TD extends IDocumentClass, D extends IDocumentInstance = 
         }
     }
 
-    public async findOne(): Promise<{[key: string]: any} | null> {
+    public async findOne<R extends {[key: string]: any}>(): Promise<R | null> {
         const cursor = this._getCursor();
 
         const friendlyErrorStack = tsMongodbOrm.getFriendlyErrorStack();
@@ -276,7 +276,7 @@ export class Aggregate<TD extends IDocumentClass, D extends IDocumentInstance = 
         return result;
     }
 
-    public async findMany(): Promise<Array<{[key: string]: any}>> {
+    public async findMany<R extends {[key: string]: any}>(): Promise<R[]> {
         const cursor = this._getCursor();
 
         const friendlyErrorStack = tsMongodbOrm.getFriendlyErrorStack();

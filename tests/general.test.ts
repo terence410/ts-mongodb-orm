@@ -1,5 +1,5 @@
 import { assert, expect } from "chai";
-import {Binary, Connection, Document, Field, Index, ObjectID, Repository} from "../src/";
+import {Binary, Connection, Document, Field, Index, ObjectId, Repository} from "../src/";
 import {AfterLoad} from "../src/decorators/hooks/AfterLoad";
 // @ts-ignore
 import {addConnection, assertMongoError} from "./share";
@@ -8,7 +8,7 @@ import {addConnection, assertMongoError} from "./share";
 @Document()
 class GeneralTest {
     @Field()
-    public _id!: ObjectID;
+    public _id!: ObjectId;
 
     @Field()
     public stringValue: string | undefined = "hello world";
@@ -92,7 +92,7 @@ describe("General Test", () => {
 
         // all values are same
         assert.deepEqual(document, findDocument!);
-        
+
         // delete it
         const deletedDocument1 = await repository1.delete(document._id);
         assert.deepEqual(document._id, deletedDocument1);
@@ -245,7 +245,7 @@ describe("General Test", () => {
     });
 
     it("insert on new", async () => {
-        const _id = ObjectID.createFromTime(new Date().getTime());
+        const _id = ObjectId.createFromTime(new Date().getTime());
         const query = repository1.query({query: {_id}});
         const document1 = await query
             .getUpdater()
@@ -261,7 +261,7 @@ describe("General Test", () => {
     });
 
     it("atomic won't have any conflict", async () => {
-        const _id = ObjectID.createFromTime(new Date().getTime());
+        const _id = ObjectId.createFromTime(new Date().getTime());
         const total = 50;
         const batch = 10;
 
@@ -387,7 +387,7 @@ describe("General Test", () => {
         const [document1] = await repository1.insertMany([repository1.create()]);
         const document2 = await repository1.insert(repository1.create());
         const document2a = repository1.create({_id: document1._id});
-        const document2b = repository1.create({_id: ObjectID.createFromTime(new Date().getTime())});
+        const document2b = repository1.create({_id: ObjectId.createFromTime(new Date().getTime())});
         const document2c = repository1.create({_id: document2._id});
         const document2d = repository1.create();
 

@@ -1,4 +1,4 @@
-import {ClientSession, Collection, MongoClient, MongoError, ObjectID} from "mongodb";
+import {ClientSession, Collection, MongoClient, MongoError, ObjectId} from "mongodb";
 import {Aggregate} from "./aggregates/Aggregate";
 import {TsMongodbOrmError} from "./errors/TsMongodbOrmError";
 import {Query} from "./queries/Query";
@@ -275,7 +275,7 @@ export class Repository<TD extends IDocumentClass> {
 
     // region operations
 
-    public async findOne(filter: Partial<IDocumentObject<InstanceType<TD>>> | ObjectID,
+    public async findOne(filter: Partial<IDocumentObject<InstanceType<TD>>> | ObjectId,
                          options: {session?: ClientSession} = {}): Promise<InstanceType<TD> | undefined> {
         const collection = this.getCollection();
 
@@ -401,8 +401,8 @@ export class Repository<TD extends IDocumentClass> {
             const mongodbResponse = await collection.updateOne({_id}, saveData, options);
 
             // if document not exist for update
-            if (mongodbResponse.result.n === 0) {
-                throw new TsMongodbOrmError(`Document, _id: ${_id}, not exists for save.`);
+            if (!options.upsert && !mongodbResponse.matchedCount) {
+                throw new TsMongodbOrmError(`Document, _id: ${_id}, not exists for update.`);
             }
 
             return document;
@@ -413,13 +413,13 @@ export class Repository<TD extends IDocumentClass> {
     }
 
     public async delete(document: InstanceType<TD>, options?: IDeleteOptions): Promise<InstanceType<TD>>;
-    public async delete(objectId: ObjectID, options?: IDeleteOptions): Promise<ObjectID>;
+    public async delete(objectId: ObjectId, options?: IDeleteOptions): Promise<ObjectId>;
     public async delete(documentOrObjectId: any, options: IDeleteOptions = {}) {
         const collection = this.getCollection();
-        const _id = (documentOrObjectId instanceof ObjectID) ? documentOrObjectId : documentOrObjectId._id;
+        const _id = (documentOrObjectId instanceof ObjectId) ? documentOrObjectId : documentOrObjectId._id;
 
         // hook
-        if (!(documentOrObjectId instanceof ObjectID)) {
+        if (!(documentOrObjectId instanceof ObjectId)) {
             tsMongodbOrm.runHookOfBeforeDelete(documentOrObjectId);
         }
 
@@ -427,7 +427,7 @@ export class Repository<TD extends IDocumentClass> {
         try {
             const mongodbResponse = await collection.deleteOne({_id}, options);
 
-            if (mongodbResponse.result.n === 0) {
+            if (!mongodbResponse.deletedCount) {
                 throw new TsMongodbOrmError(`Document, _id: ${_id}, not exists for delete.`);
             }
 

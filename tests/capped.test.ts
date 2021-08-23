@@ -1,12 +1,12 @@
 import { assert, expect } from "chai";
-import { Connection, Document, Field, ObjectID, Repository} from "../src";
+import { Connection, Document, Field, ObjectId, Repository} from "../src";
 // @ts-ignore
 import {addConnection, assertMongoError} from "./share";
 
 @Document()
 class CappedTest {
     @Field()
-    public _id!: ObjectID;
+    public _id!: ObjectId;
 
     @Field()
     public index: number = 0;

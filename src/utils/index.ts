@@ -47,5 +47,11 @@ export function getUsedMemoryInMb() {
     return (process.memoryUsage().heapUsed / 1024 / 1024) | 0;
 }
 
+/** @internal */
+export function getMongodbModuleVersion() {
+    const json = require("mongodb/package.json");
+    return json.version;
+}
+
 // endregion
 

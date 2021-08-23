@@ -1,5 +1,5 @@
 import { assert, expect } from "chai";
-import {Connection, Document, Field, Index, ObjectID, Repository} from "../src/";
+import {Connection, Document, Field, Index, ObjectId, Repository} from "../src/";
 // @ts-ignore
 import {addConnection} from "./share";
 
@@ -7,7 +7,7 @@ import {addConnection} from "./share";
 @Document()
 class TransactionManagerTest {
     @Field()
-    public _id!: ObjectID;
+    public _id!: ObjectId;
 
     @Field()
     public stringValue: string = "hello world";
@@ -63,7 +63,7 @@ describe("Transaction Manager Test", () => {
     });
 
     it("rollback on error", async () => {
-        let _id!: ObjectID;
+        let _id!: ObjectId;
         let hasDocumentInTransaction = false;
         let hasDocumentInNonTransaction = false;
         let totalInTransaction = 0;
@@ -112,8 +112,8 @@ describe("Transaction Manager Test", () => {
     });
 
     it("abort transaction", async () => {
-        let _id1!: ObjectID;
-        let _id2!: ObjectID;
+        let _id1!: ObjectId;
+        let _id2!: ObjectId;
 
         const transactionManager = connection1.getTransactionManager();
         const transactionResult = await transactionManager.startTransaction(async (session) => {
@@ -145,8 +145,8 @@ describe("Transaction Manager Test", () => {
     });
 
     it("use different repository with different dbName", async () => {
-        let _id1!: ObjectID;
-        let _id2!: ObjectID;
+        let _id1!: ObjectId;
+        let _id2!: ObjectId;
 
         const transactionManager = connection1.getTransactionManager();
         await transactionManager.startTransaction(async (session) => {

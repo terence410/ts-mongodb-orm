@@ -23,10 +23,6 @@ export class Connection {
         this.dbName = options.dbName;
     }
 
-    public get isConnected() {
-        return this.mongoClient.isConnected();
-    }
-
     public async close() {
         const friendlyErrorStack = tsMongodbOrm.getFriendlyErrorStack();
         try {

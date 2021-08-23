@@ -32,7 +32,7 @@ export class QueryDeleter<TD extends IDocumentClass> {
         const friendlyErrorStack = tsMongodbOrm.getFriendlyErrorStack();
         try {
             const mongodbResponse =  await collection.deleteOne(this.query.nativeQuery, {session: this.query.session});
-            return mongodbResponse.result.n || 0;
+            return mongodbResponse.deletedCount || 0;
 
         } catch (err) {
             throw Object.assign(err, friendlyErrorStack && {stack: updateStack(friendlyErrorStack, err)});
@@ -45,7 +45,7 @@ export class QueryDeleter<TD extends IDocumentClass> {
         const friendlyErrorStack = tsMongodbOrm.getFriendlyErrorStack();
         try {
             const mongodbResponse =  await collection.deleteMany(this.query.nativeQuery, {session: this.query.session});
-            return mongodbResponse.result.n || 0;
+            return mongodbResponse.deletedCount || 0;
 
         } catch (err) {
             throw Object.assign(err, friendlyErrorStack && {stack: updateStack(friendlyErrorStack, err)});

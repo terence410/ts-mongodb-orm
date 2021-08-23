@@ -1,5 +1,5 @@
 import { assert, expect } from "chai";
-import { Connection, Document, Field, ObjectID, Repository} from "../src";
+import { Connection, Document, Field, ObjectId, Repository} from "../src";
 import {timeout} from "../src/utils";
 // @ts-ignore
 import {addConnection, assertMongoError} from "./share";
@@ -7,7 +7,7 @@ import {addConnection, assertMongoError} from "./share";
 @Document({collectionName: "SchemaTest", validationLevel: "strict"})
 class SchemaTest {
     @Field()
-    public _id!: ObjectID;
+    public _id!: ObjectId;
 
     @Field({isRequired: true, schema: {minLength: 5}})
     public requiredValue?: string;
@@ -33,7 +33,7 @@ class SchemaModerateTest extends SchemaTest {
 @Document({collectionName: "SchemaTest"})
 class SchemaNoneTest {
     @Field()
-    public _id!: ObjectID;
+    public _id!: ObjectId;
 }
 
 describe("Validator Test", () => {

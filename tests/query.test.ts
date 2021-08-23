@@ -1,5 +1,5 @@
 import {assert} from "chai";
-import {Connection, Document, Field, Index, mongodbDataTypes, ObjectID, Repository} from "../src/";
+import {Connection, Document, Field, Index, mongodbDataTypes, ObjectId, Repository} from "../src/";
 // @ts-ignore
 import {addConnection} from "./share";
 
@@ -7,7 +7,7 @@ import {addConnection} from "./share";
 @Document()
 class QueryTest {
     @Field()
-    public _id!: ObjectID;
+    public _id!: ObjectId;
 
     @Field()
     public sequence: number = 0;

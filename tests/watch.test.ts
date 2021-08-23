@@ -1,5 +1,5 @@
 import { assert, expect } from "chai";
-import {Connection, Document, Field, ObjectID, Repository} from "../src/";
+import {Connection, Document, Field, ObjectId, Repository} from "../src/";
 import {timeout} from "../src/utils";
 // @ts-ignore
 import {addConnection} from "./share";
@@ -7,7 +7,7 @@ import {addConnection} from "./share";
 @Document()
 class WatchTest {
     @Field()
-    public _id!: ObjectID;
+    public _id!: ObjectId;
 
     @Field()
     public date: Date = new Date();

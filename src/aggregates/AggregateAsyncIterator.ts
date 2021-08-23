@@ -4,18 +4,18 @@ import {
     updateStack,
 } from "../utils";
 
-interface IAsyncIterator {
-    next(value?: any): Promise<IteratorResult<any>>;
+interface IAsyncIterator<R extends any> {
+    next(value?: any): Promise<IteratorResult<R>>;
 }
 
-export class AggregateAsyncIterator {
+export class AggregateAsyncIterator<R extends any> {
     public readonly cursor: AggregationCursor;
 
     constructor(options: { cursor: AggregationCursor }) {
         this.cursor = options.cursor;
     }
 
-    public [Symbol.asyncIterator](): IAsyncIterator {
+    public [Symbol.asyncIterator](): IAsyncIterator<R> {
 
         return {
             next: async () => {

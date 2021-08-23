@@ -22,6 +22,7 @@ npm install --save mongodb @types/mongodb
 ```
 
 This library has been tested with the follow [mongodb](https://www.npmjs.com/package/mongodb) versions:
+- v3.6.9
 - v3.6.3
 - v3.6.0
 - v3.5.10
@@ -40,13 +41,13 @@ This library has been tested with the follow [mongodb](https://www.npmjs.com/pac
 # Example: Quick Start
 ```typescript
 
-import { Binary, createConnection, Document, Field, Index, ObjectID } from "ts-mongodb-orm";
+import { Binary, createConnection, Document, Field, Index, ObjectId } from "ts-mongodb-orm";
 
 @Index({numberValue: -1})
 @Document({collectionName: "CustomCollectionName"}) // default to Class name
 class QuickStart {
     @Field()
-    public _id!: ObjectID;
+    public _id!: ObjectId;
 
     @Field()
     public stringValue?: string;
@@ -251,7 +252,7 @@ async function manageIndexExample() {
     @Document()
     class IndexDocument {
         @Field()
-        public _id!: ObjectID;
+        public _id!: ObjectId;
 
         @Field()
         public uniqueField?: string;
@@ -326,7 +327,7 @@ async function hookExample() {
     @Document()
     class HookDocument {
         @Field()
-        public _id!: ObjectID;
+        public _id!: ObjectId;
 
         @AfterLoad()
         public afterLoad() {
@@ -354,7 +355,7 @@ async function schemaValidationExample() {
     @Document()
     class SchemaValidationDocument {
         @Field()
-        public _id!: ObjectID;
+        public _id!: ObjectId;
 
         @Field({isRequired: true, schema: {bsonType: "string"}})
         public stringField?: string;
@@ -436,7 +437,7 @@ async function bufferExample() {
     @Document()
     class BufferDocument {
         @Field()
-        public _id!: ObjectID;
+        public _id!: ObjectId;
 
         @Field()
         public buffer: Buffer = Buffer.alloc(0);

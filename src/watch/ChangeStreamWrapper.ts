@@ -43,7 +43,7 @@ export class ChangeStreamWrapper<TD extends IDocumentClass> extends EventEmitter
         return this.changeStream.isClosed();
     }
 
-    public close(): Promise<void> {
+    public async close(): Promise<void> {
         return this.changeStream.close();
     }
 

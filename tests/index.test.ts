@@ -1,6 +1,6 @@
 import { assert, expect } from "chai";
 import {Test} from "mocha";
-import {Connection, Document, Field, Index, ObjectID} from "../src/";
+import {Connection, Document, Field, Index, ObjectId} from "../src/";
 import {timeout} from "../src/utils";
 // @ts-ignore
 import {addConnection} from "./share";
@@ -21,7 +21,7 @@ const indexSyncTestCollectionName2 = "IndexSyncTest2";
 @Document()
 class IndexTest {
     @Field()
-    public _id!: ObjectID;
+    public _id!: ObjectId;
 
     @Field()
     public intValue: number = 0;
@@ -34,7 +34,7 @@ class IndexTest {
 @Document()
 class IndexExpireTest {
     @Field()
-    public _id!: ObjectID;
+    public _id!: ObjectId;
 
     @Field()
     public date: Date = new Date();
@@ -44,7 +44,7 @@ class IndexExpireTest {
 @Document({collectionName: indexSyncTestCollectionName1})
 class IndexSyncTest {
     @Field()
-    public _id!: ObjectID;
+    public _id!: ObjectId;
 
     @Field()
     public date: Date = new Date();
@@ -54,7 +54,7 @@ class IndexSyncTest {
 @Document()
 class IndexAddTest1 {
     @Field()
-    public _id!: ObjectID;
+    public _id!: ObjectId;
 
     @Field()
     public date1: Date = new Date();
@@ -64,7 +64,7 @@ class IndexAddTest1 {
 @Document()
 class IndexAddTest2 {
     @Field()
-    public _id!: ObjectID;
+    public _id!: ObjectId;
 
     @Field()
     public date2: Date = new Date();
@@ -74,7 +74,7 @@ class IndexAddTest2 {
 @Document()
 class IndexInline1 {
     @Field()
-    public _id!: ObjectID;
+    public _id!: ObjectId;
 
     @Field({index: -1, indexOptions: {unique: true}})
     public date2: Date = new Date();
@@ -84,7 +84,7 @@ class IndexInline1 {
 @Document()
 class TestExplain {
     @Field()
-    public _id!: ObjectID;
+    public _id!: ObjectId;
 
     @Field({index: 1})
     public a: number = 0;

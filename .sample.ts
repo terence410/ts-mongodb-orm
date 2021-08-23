@@ -12,7 +12,7 @@ import {
     Index,
     mongodbDataTypes,
     MongoError,
-    ObjectID,
+    ObjectId,
     tsMongodbOrm,
     TsMongodbOrmError,
 } from "./src";
@@ -21,7 +21,7 @@ import {
 @Document({collectionName: "CustomCollectionName"}) // default to Class name
 class QuickStart {
     @Field()
-    public _id!: ObjectID;
+    public _id!: ObjectId;
 
     @Field()
     public stringValue?: string;
@@ -213,7 +213,7 @@ async function quickStartExample() {
         @Document()
         class IndexDocument {
             @Field()
-            public _id!: ObjectID;
+            public _id!: ObjectId;
 
             @Field()
             public uniqueField?: string;
@@ -283,7 +283,7 @@ async function quickStartExample() {
         @Document()
         class HookDocument {
             @Field()
-            public _id!: ObjectID;
+            public _id!: ObjectId;
 
             @AfterLoad()
             public afterLoad() {
@@ -308,7 +308,7 @@ async function quickStartExample() {
         @Document()
         class SchemaValidationDocument {
             @Field()
-            public _id!: ObjectID;
+            public _id!: ObjectId;
 
             @Field({isRequired: true, schema: {bsonType: "string"}})
             public stringField?: string;
@@ -385,7 +385,7 @@ async function bufferExample() {
     @Document()
     class BufferDocument {
         @Field()
-        public _id!: ObjectID;
+        public _id!: ObjectId;
 
         @Field()
         public buffer: Buffer = Buffer.alloc(0);

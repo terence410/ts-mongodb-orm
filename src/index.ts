@@ -1,4 +1,4 @@
-import {Binary, MongoClientOptions, MongoError, ObjectID} from "mongodb";
+import {Binary, MongoClientOptions, MongoError, ObjectId} from "mongodb";
 import {Connection} from "./Connection";
 import {Document} from "./decorators/Document";
 import {Field} from "./decorators/Field";
@@ -48,6 +48,6 @@ export {
     // mongodb
     MongoClientOptions,
     MongoError,
-    ObjectID,
+    ObjectId,
     Binary,
 };

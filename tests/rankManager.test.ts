@@ -202,7 +202,7 @@ describe("Lock Manager Test", () => {
                 await Promise.all(promises);
 
                 // check the number
-                console.log("multiplier", multiplier);
+                // console.log("multiplier", multiplier);
                 assert.equal(await rankManager.count(), options.maxScore * multiplier);
 
                 // get result and save it
@@ -244,7 +244,7 @@ describe("Lock Manager Test", () => {
                 .sort((a, b) => b - a);
 
             await Promise.all(scores.map(score => rankManager.addScore(score)));
-            console.log("added scores");
+            // console.log("added scores");
 
             const count = await rankManager.count();
             assert.equal(count, totalScores);
@@ -279,12 +279,12 @@ describe("Lock Manager Test", () => {
             for (let i = options.minScore; i <= options.maxScore; i++) {
                 const promises = Array(i).fill(0).map(x => rankManager.addScore(i));
                 await Promise.all(promises);
-                console.log("added", i);
+                // console.log("added", i);
             }
 
             const count = (total + 1) * (total + 2) / 2;
             assert.equal(await rankManager.count(), count);
-            console.log("count", count);
+            // console.log("count", count);
 
             for (let i = options.minScore; i <= options.maxScore; i++) {
                 const count1 = await rankManager.countByScore(i);

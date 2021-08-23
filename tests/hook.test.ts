@@ -1,6 +1,6 @@
 import { assert, expect } from "chai";
 import {Length, validateSync} from "class-validator";
-import { Connection, Document, Field, ObjectID, Repository} from "../src";
+import { Connection, Document, Field, ObjectId, Repository} from "../src";
 import {AfterLoad} from "../src/decorators/hooks/AfterLoad";
 import {BeforeDelete} from "../src/decorators/hooks/BeforeDelete";
 import {BeforeInsert} from "../src/decorators/hooks/BeforeInsert";
@@ -12,7 +12,7 @@ import {addConnection, assertAsyncError, assertMongoError} from "./share";
 @Document()
 export class HookClass1 {
     @Field()
-    public _id!: ObjectID;
+    public _id!: ObjectId;
 
     @Field()
     public updatedAt: Date = new Date();
@@ -58,7 +58,7 @@ export class HookClass1 {
 @Document()
 export class HookClass2 {
     @Field()
-    public _id!: ObjectID;
+    public _id!: ObjectId;
 
     public states: string[] = [];
 

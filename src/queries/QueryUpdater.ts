@@ -42,7 +42,7 @@ export class QueryUpdater<TD extends IDocumentClass, AD extends IDocumentInstanc
         try {
             const mongodbResponse = await collection.updateOne(this.query.nativeQuery,
                 this.nativeQuery, {session: this.query.session, ...options});
-            return mongodbResponse.result.n;
+            return mongodbResponse.modifiedCount + mongodbResponse.upsertedCount;
 
         } catch (err) {
             throw Object.assign(err, friendlyErrorStack && {stack: updateStack(friendlyErrorStack, err)});
@@ -56,7 +56,7 @@ export class QueryUpdater<TD extends IDocumentClass, AD extends IDocumentInstanc
         try {
             const mongodbResponse = await collection.updateMany(this.query.nativeQuery,
                 this.nativeQuery, {session: this.query.session, ...options});
-            return mongodbResponse.result.n;
+            return mongodbResponse.modifiedCount + mongodbResponse.upsertedCount;
 
         } catch (err) {
             throw Object.assign(err, friendlyErrorStack && {stack: updateStack(friendlyErrorStack, err)});

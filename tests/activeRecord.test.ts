@@ -1,12 +1,12 @@
 import { assert, expect } from "chai";
-import {Connection, Document, Field, ObjectID} from "../src/";
+import {Connection, Document, Field, ObjectId} from "../src/";
 // @ts-ignore
 import {addConnection} from "./share";
 
 let activeRecordConnection!: Connection;
 
 class BaseDocument {
-    public static async findOne<TD extends typeof BaseDocument>(this: TD, filter: ObjectID) {
+    public static async findOne<TD extends typeof BaseDocument>(this: TD, filter: ObjectId) {
         const repository = activeRecordConnection.getRepository(this);
         return await repository.findOne(filter);
     }
@@ -39,7 +39,7 @@ class BaseDocument {
 @Document()
 class SimpleActiveRecordTest extends BaseDocument {
     @Field()
-    public _id!: ObjectID;
+    public _id!: ObjectId;
 }
 
 describe("Active Record Test", () => {

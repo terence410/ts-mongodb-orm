@@ -2,13 +2,17 @@
 import {EventEmitter} from "events";
 import {
     ClientSession,
-    CollectionInsertManyOptions, CollectionInsertOneOptions, CommonOptions,
+    CollectionInsertManyOptions,
+    CollectionInsertOneOptions,
+    CommonOptions,
     FilterQuery,
     FindOneAndUpdateOption,
     MongoClient,
     MongoError,
-    TransactionOptions, UpdateManyOptions, UpdateOneOptions,
-    UpdateQuery
+    TransactionOptions,
+    UpdateManyOptions,
+    UpdateOneOptions,
+    UpdateQuery,
 } from "mongodb";
 import {ChangeStreamWrapper} from "./watch/ChangeStreamWrapper";
 

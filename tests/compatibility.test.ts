@@ -5,7 +5,7 @@ import {
     Connection,
     Document,
     Field,
-    ObjectID
+    ObjectId
 } from "../src";
 // @ts-ignore
 import {addConnection} from "./share";
@@ -13,7 +13,7 @@ import {addConnection} from "./share";
 @Document()
 class CompatibilityTest {
     @Field()
-    public _id!: ObjectID;
+    public _id!: ObjectId;
 
     @Field()
     @Contains("hello")

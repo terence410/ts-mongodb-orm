@@ -1,5 +1,5 @@
 import { assert, expect } from "chai";
-import {Connection, Document, Field, Index, ObjectID, Repository, tsMongodbOrm} from "../src";
+import {Connection, Document, Field, Index, ObjectId, Repository, tsMongodbOrm} from "../src";
 // @ts-ignore
 import {addConnection, assertMongoError, assertTsMongodbOrmError} from "./share";
 
@@ -7,7 +7,7 @@ import {addConnection, assertMongoError, assertTsMongodbOrmError} from "./share"
 @Document()
 class ErrorTest {
     @Field()
-    public _id!: ObjectID;
+    public _id!: ObjectId;
 
     @Field()
     public value: number = 5;
@@ -66,7 +66,7 @@ describe("Error Test", () => {
         await assertTsMongodbOrmError(() => {
             @Document()
             class ErrorTest1 {
-                public _id!: ObjectID;
+                public _id!: ObjectId;
             }
         }, /Document must define a _id field/);
     });
@@ -99,7 +99,7 @@ describe("Error Test", () => {
 
         await assertTsMongodbOrmError(async () => {
             await repository.update(document1);
-        }, /Document.* not exists for save./);
+        }, /Document.* not exists for update./);
     });
 
     it("manage index that not exist", async () => {
