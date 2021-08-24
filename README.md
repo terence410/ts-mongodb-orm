@@ -22,6 +22,7 @@ npm install --save mongodb @types/mongodb
 ```
 
 This library has been tested with the follow [mongodb](https://www.npmjs.com/package/mongodb) versions:
+- v3.6.11
 - v3.6.9
 - v3.6.3
 - v3.6.0

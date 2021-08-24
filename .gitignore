@@ -16,6 +16,7 @@ src/**/*.d.ts
 tests/**/*.js
 tests/**/*.d.ts
 !src/@types/**/*
+TODO.md
 
 # User-specific stuff
 .idea/**/workspace.xml

@@ -49,5 +49,6 @@ export {
     MongoClientOptions,
     MongoError,
     ObjectId,
+    ObjectId as ObjectID,
     Binary,
 };
