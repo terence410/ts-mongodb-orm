@@ -3,7 +3,8 @@ name: Testing
 on:
   push:
     branches:
-      - develop
+      - '1.0-develop'
+      - '2.0-develop'
 
 env:
   MONGODB_URI: ${{ secrets.MONGODB_URI }}
@@ -13,7 +14,7 @@ env:
 
 jobs:
   testing:
-    if: startsWith(github.event.head_commit.message, '1.0') != true
+    if: startsWith(github.event.head_commit.message, '1.0') != true && startsWith(github.event.head_commit.message, '2.0') != true
 
     runs-on: ubuntu-latest
 
