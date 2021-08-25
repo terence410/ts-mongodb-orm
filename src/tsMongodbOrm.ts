@@ -140,7 +140,7 @@ class TsMongodbOrm {
     }
 
     /** @internal */
-    public loadEntity<T extends IDocumentClass>(classObject: T, data: any): InstanceType<T> {
+    public loadDocument<T extends IDocumentClass>(classObject: T, data: any): InstanceType<T> {
         const document = new classObject() as InstanceType<T>;
         Object.assign(document, data);
 

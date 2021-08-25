@@ -197,7 +197,7 @@ describe("Transaction Manager Test", () => {
 
             // use iterator
             const iterator = repository1
-                .query({query: {numberValue}, session})
+                .query({filter: {numberValue}, session})
                 .getAsyncIterator();
             for await (const document of iterator) {
                 documents.push(document);
@@ -205,7 +205,7 @@ describe("Transaction Manager Test", () => {
             }
         });
 
-        const foundDocument = await repository1.query({query: {numberValue}}).findOne();
+        const foundDocument = await repository1.query({filter: {numberValue}}).findOne();
         assert.isUndefined(foundDocument);
 
         assert.equal(documents.length, 1);
@@ -264,7 +264,7 @@ describe("Transaction Manager Test", () => {
             }
 
             const iterator = repository1
-                .query({session, query: {numberValue: randomValue}})
+                .query({session, filter: {numberValue: randomValue}})
                 .getAsyncIterator();
             const items: TransactionManagerTest[] = [];
             for await (const item of iterator) {
@@ -280,7 +280,7 @@ describe("Transaction Manager Test", () => {
 
         // this should be 0 after abort transaction
         const count = await repository1
-            .query({query: {numberValue: randomValue}})
+            .query({filter: {numberValue: randomValue}})
             .count();
         assert.equal(count, 0);
     });

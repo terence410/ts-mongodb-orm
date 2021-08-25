@@ -16,15 +16,17 @@ type IExpression = any;
 type IMapExpression = {[key: string]: IExpression};
 type IMapArrayExpression = {[key: string]: IExpression[]};
 
-//  the functional programming is to make things strong type and ease of use, while the nativeQuery
+//  the functional programming is to make things strong type and ease of use, while the nativeFilter
 // will not be structurally the same as the functional callback
-export class Aggregate<TD extends IDocumentClass, D extends IDocumentInstance = InstanceType<TD>> {
+export class Aggregate<TD extends IDocumentClass, D extends IDocumentInstance = InstanceType<TD>, RD extends any = {[key: string]: any}> {
     public readonly mongoClient: MongoClient;
     public readonly classObject: TD;
     public readonly dbName: string;
     public readonly collectionName: string;
     public readonly aggregateOptions: IAggregateOptions;
     public nativePipeline: Array<{[key: string]: any}>;
+
+    private _toDocument = false;
 
     constructor(options: IRepositoryOptions<TD>, aggregateOptions: IAggregateOptions = {}) {
         this.mongoClient = options.mongoClient;
@@ -144,7 +146,7 @@ export class Aggregate<TD extends IDocumentClass, D extends IDocumentInstance = 
         const baseQuery = new QueryLogic({});
         expression(baseQuery);
 
-        this._createPipeline("$match", baseQuery.nativeQuery);
+        this._createPipeline("$match", baseQuery.nativeFilter);
         return this;
     }
 
@@ -246,9 +248,14 @@ export class Aggregate<TD extends IDocumentClass, D extends IDocumentInstance = 
 
     // region public methods
 
-    public getAsyncIterator<R extends {[key: string]: any}>() {
+    public toDocument(): Aggregate<TD, D, InstanceType<TD>> {
+        this._toDocument = true;
+        return this as any;
+    }
+
+    public getAsyncIterator() {
         const cursor = this._getCursor();
-        return new AggregateAsyncIterator<R>({cursor});
+        return new AggregateAsyncIterator<TD, RD>({cursor, classObject: this.classObject, toDocument: this._toDocument});
     }
 
     public async explain(): Promise<any> {
@@ -262,7 +269,7 @@ export class Aggregate<TD extends IDocumentClass, D extends IDocumentInstance = 
         }
     }
 
-    public async findOne<R extends {[key: string]: any}>(): Promise<R | null> {
+    public async findOne(): Promise<RD | null | undefined> {
         const cursor = this._getCursor();
 
         const friendlyErrorStack = tsMongodbOrm.getFriendlyErrorStack();
@@ -273,10 +280,18 @@ export class Aggregate<TD extends IDocumentClass, D extends IDocumentInstance = 
             throw Object.assign(err, friendlyErrorStack && {stack: updateStack(friendlyErrorStack, err)});
         }
 
-        return result;
+        if (this._toDocument) {
+            if (result) {
+                return tsMongodbOrm.loadDocument(this.classObject, result) as any;
+            } else {
+                return undefined;
+            }
+        } else {
+            return result;
+        }
     }
 
-    public async findMany<R extends {[key: string]: any}>(): Promise<R[]> {
+    public async findMany(): Promise<RD[]> {
         const cursor = this._getCursor();
 
         const friendlyErrorStack = tsMongodbOrm.getFriendlyErrorStack();
@@ -285,6 +300,10 @@ export class Aggregate<TD extends IDocumentClass, D extends IDocumentInstance = 
             result = await cursor.toArray();
         } catch (err) {
             throw Object.assign(err, friendlyErrorStack && {stack: updateStack(friendlyErrorStack, err)});
+        }
+
+        if (this._toDocument) {
+            return result.map((x: any) => tsMongodbOrm.loadDocument(this.classObject, x));
         }
 
         return result;

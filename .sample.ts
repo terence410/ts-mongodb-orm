@@ -1,3 +1,4 @@
+import {ReadPreference} from "mongodb";
 import {
     AfterLoad,
     BeforeDelete,
@@ -51,9 +52,8 @@ async function quickStartExample() {
         dbName: "DbName",
         mongoClientOptions: {
             w: "majority",
-            useNewUrlParser: true,
             ignoreUndefined: true, // preventing saving null value in server side
-            useUnifiedTopology: true,
+            serverSelectionTimeoutMS: 5000,
         },
     });
 
@@ -142,7 +142,6 @@ async function quickStartExample() {
             .nor(x => {
                 x.filter("fieldC.a", 7);
             });
-        const nativeQuery = query4.nativeQuery;
     }
 
     async function aggregateExample() {
@@ -173,11 +172,16 @@ async function quickStartExample() {
         const result3 = await repository.aggregate({weakType: true})
             .match(x => x.filter("anyFieldName", 1))
             .findOne();
+
+        // cast to document directly
+        const result4 = await repository.aggregate()
+            .toDocument()
+            .findOne();
+        const {stringValue} = result4!;
     }
 
     async function transactionExample() {
-        const transactionManager1 = connection.getTransactionManager(
-            {maxRetry: 2, transactionOptions: {readPreference: "primary"}});
+        const transactionManager1 = connection.getTransactionManager({maxRetry: 2});
 
         try {
             const result = await transactionManager1.startTransaction(async (session) => {
@@ -375,10 +379,8 @@ async function bufferExample() {
         dbName: "DbName",
         mongoClientOptions: {
             w: "majority",
-            useNewUrlParser: true,
             ignoreUndefined: true, // preventing saving null value in server side
             promoteBuffers: true, // if you wanted to use buffer directly
-            useUnifiedTopology: true,
         },
     });
 

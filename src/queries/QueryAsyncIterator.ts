@@ -1,4 +1,4 @@
-import {Cursor} from "mongodb";
+import {FindCursor} from "mongodb";
 import {tsMongodbOrm} from "../tsMongodbOrm";
 import {IDocumentClass} from "../types";
 import {
@@ -11,10 +11,10 @@ interface IAsyncIterator<T> {
 
 // Remarks: considering support batch size
 export class QueryAsyncIterator<TD extends IDocumentClass> {
-    public readonly cursor: Cursor;
+    public readonly cursor: FindCursor;
     public readonly classObject: TD;
 
-    constructor(options: { classObject: TD, cursor: Cursor}) {
+    constructor(options: { classObject: TD, cursor: FindCursor}) {
         this.cursor = options.cursor;
         this.classObject = options.classObject;
     }
@@ -34,7 +34,7 @@ export class QueryAsyncIterator<TD extends IDocumentClass> {
 
                 let document!: InstanceType<TD>;
                 if (data) {
-                    document = tsMongodbOrm.loadEntity(this.classObject, data);
+                    document = tsMongodbOrm.loadDocument(this.classObject, data);
                 }
 
                 return { value: document, done: !data};

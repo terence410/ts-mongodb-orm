@@ -54,21 +54,17 @@ describe("Watcher Test", () => {
         await Promise.all([promise3a, promise3b]);
 
         // drop the collection and get end and close event
-        const promise4a = new Promise(async resolve => {
+        const promise4a = new Promise(resolve => {
             const eventNames: string[] = [];
 
             stream.on("change", next => {
                 eventNames.push(next.operationType);
             });
-            
-            stream.once("end", () => {
-                eventNames.push("end");
-            });
 
             // stream close at the end
             stream.once("close", () => {
-                if (eventNames.join(",") === "drop,invalidate,end") {
-                    resolve();
+                if (eventNames.join(",") === "drop,invalidate") {
+                    resolve(true);
                 }
             });
         });

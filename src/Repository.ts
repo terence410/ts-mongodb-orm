@@ -5,13 +5,14 @@ import {Query} from "./queries/Query";
 import {tsMongodbOrm} from "./tsMongodbOrm";
 import {
     IAggregateOptions,
+    IBulkWriteOptions,
     IChangeStreamWrapper,
     ICompareIndexResult,
     ICreateCollectionOptions,
     IDeleteOptions,
     IDocumentClass,
-    IDocumentIndexMeta,
-    IDocumentObject, IInsertManyOptions, IInsertOptions,
+    IDocumentIndexMeta, 
+    IDocumentObject, IInsertOneOptions,
     IObject,
     IQueryOptions,
     IRepositoryOptions,
@@ -95,7 +96,8 @@ export class Repository<TD extends IDocumentClass> {
         const friendlyErrorStack = tsMongodbOrm.getFriendlyErrorStack();
         let existingServerIndexes: any[];
         try {
-            existingServerIndexes = await collection.indexes();
+            // Remarks: bug in the mongodb types
+            existingServerIndexes = await collection.indexes() as any[];
         } catch (err) {
             throw Object.assign(err, friendlyErrorStack && {stack: updateStack(friendlyErrorStack, err)});
         }
@@ -288,7 +290,7 @@ export class Repository<TD extends IDocumentClass> {
             const mongodbResponse = await collection.findOne(filter, options);
 
             if (mongodbResponse) {
-                return tsMongodbOrm.loadEntity(this.classObject, mongodbResponse);
+                return tsMongodbOrm.loadDocument(this.classObject, mongodbResponse);
             }
 
         } catch (err) {
@@ -336,7 +338,7 @@ export class Repository<TD extends IDocumentClass> {
         return document;
     }
 
-    public async insert(document: InstanceType<TD>, options: IInsertOptions = {}) {
+    public async insert(document: InstanceType<TD>, options: IInsertOneOptions = {}) {
         const collection = this.getCollection();
         const saveData = this._getSaveData(document);
 
@@ -356,7 +358,7 @@ export class Repository<TD extends IDocumentClass> {
         }
     }
 
-    public async insertMany(documents: Array<InstanceType<TD>>, options?: IInsertManyOptions): Promise<Array<InstanceType<TD>>> {
+    public async insertMany(documents: Array<InstanceType<TD>>, options: IBulkWriteOptions = {}): Promise<Array<InstanceType<TD>>> {
         const collection = this.getCollection();
 
         const setList: any[] = [];

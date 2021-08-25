@@ -12,12 +12,12 @@ export class QueryDeleter<TD extends IDocumentClass> {
 
         const friendlyErrorStack = tsMongodbOrm.getFriendlyErrorStack();
         try {
-            const mongodbResponse =  await collection.findOneAndDelete(this.query.nativeQuery,
+            const mongodbResponse =  await collection.findOneAndDelete(this.query.nativeFilter,
                 {session: this.query.session});
 
             // return a document
             if (mongodbResponse.value) {
-                const document =  tsMongodbOrm.loadEntity(this.query.classObject, mongodbResponse.value);
+                const document =  tsMongodbOrm.loadDocument(this.query.classObject, mongodbResponse.value);
                 return document;
             }
 
@@ -31,7 +31,7 @@ export class QueryDeleter<TD extends IDocumentClass> {
 
         const friendlyErrorStack = tsMongodbOrm.getFriendlyErrorStack();
         try {
-            const mongodbResponse =  await collection.deleteOne(this.query.nativeQuery, {session: this.query.session});
+            const mongodbResponse =  await collection.deleteOne(this.query.nativeFilter, {session: this.query.session});
             return mongodbResponse.deletedCount || 0;
 
         } catch (err) {
@@ -44,7 +44,7 @@ export class QueryDeleter<TD extends IDocumentClass> {
 
         const friendlyErrorStack = tsMongodbOrm.getFriendlyErrorStack();
         try {
-            const mongodbResponse =  await collection.deleteMany(this.query.nativeQuery, {session: this.query.session});
+            const mongodbResponse =  await collection.deleteMany(this.query.nativeFilter, {session: this.query.session});
             return mongodbResponse.deletedCount || 0;
 
         } catch (err) {

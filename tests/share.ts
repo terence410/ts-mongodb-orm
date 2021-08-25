@@ -7,9 +7,7 @@ const uri = process.env.MONGODB_URI as string;
 const dbName = process.env.MONGODB_DB as string;
 const mongoClientOptions: MongoClientOptions = {
     w: "majority",
-    useNewUrlParser: true,
     ignoreUndefined: true,
-    useUnifiedTopology: true,
     serverSelectionTimeoutMS: 5000,
 };
 

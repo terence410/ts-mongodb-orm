@@ -22,7 +22,8 @@ npm install --save mongodb @types/mongodb
 ```
 
 This library has been tested with the follow [mongodb](https://www.npmjs.com/package/mongodb) versions:
-- v3.6.11
+- v4.1.0
+- v3.6.11 (please install ts-mongodb-orm@1.0.x for below versions)
 - v3.6.9
 - v3.6.3
 - v3.6.0
@@ -78,9 +79,8 @@ async function quickStartExample() {
         dbName: "DbName",
         mongoClientOptions: {
             w: "majority",
-            useNewUrlParser: true,
             ignoreUndefined: true, // preventing saving null value in server side
-            useUnifiedTopology: true,
+            serverSelectionTimeoutMS: 5000,
         },
     });
 
@@ -173,7 +173,6 @@ async function queryExample() {
         .nor(x => {
             x.filter("fieldC.a", 7);
         });
-    const nativeQuery = query4.nativeQuery;
 }
 ```
 
@@ -206,6 +205,12 @@ async function aggregateExample() {
     const result3 = await repository.aggregate({weakType: true})
         .match(x => x.filter("anyFieldName", 1))
         .findOne();
+
+    // cast to document directly
+        const result4 = await repository.aggregate()
+            .toDocument()
+            .findOne();
+        const {stringValue} = result4!;
 }
 
 ```
@@ -213,8 +218,7 @@ async function aggregateExample() {
 # Example: Transaction
 ```typescript
 async function transactionExample() {
-    const transactionManager1 = connection.getTransactionManager(
-        {maxRetry: 2, transactionOptions: {readPreference: "primary"}});
+    const transactionManager1 = connection.getTransactionManager({maxRetry: 2});
 
     try {
         const result = await transactionManager1.startTransaction(async (session) => {
@@ -483,6 +487,3 @@ Examples are in the [`tests/`](https://github.com/terence410/ts-mongodb-orm/tree
 - https://docs.mongodb.com/manual/
 - https://docs.mongodb.com/manual/core/schema-validation/
 
-# TODO
-- Complete query on geo and text
-- Support collation

@@ -66,7 +66,7 @@ describe("Query Test", () => {
         const total1 = await query.count();
         assert.equal(total, total1);
 
-        assert.deepEqual(query.nativeQuery, {});
+        assert.deepEqual(query.nativeFilter, {});
     });
 
     it("count", async () => {
@@ -219,7 +219,7 @@ describe("Query Test", () => {
 
     it("pass filter query directly", async () => {
         const targetValue = 0;
-        const query = repository.query({query: {intValue: targetValue}});
+        const query = repository.query({filter: {intValue: targetValue}});
         const total1 = await query.count();
 
         const total2 = documents.filter(x => x.intValue === targetValue).length;
@@ -228,11 +228,11 @@ describe("Query Test", () => {
 
     it("pass update query directly", async () => {
         const targetValue = 0;
-        const documents1 = await repository.query({query: {intValue: targetValue}}).findMany();
+        const documents1 = await repository.query({filter: {intValue: targetValue}}).findMany();
         const sum1 = documents1.reduce((a, b) => a + b.numberValue, 0);
 
-        const query1 = repository.query({query: {intValue: targetValue}});
-        const totalUpdated = await query1.getUpdater({query: {$inc: {numberValue: 2}}}).updateMany();
+        const query1 = repository.query({filter: {intValue: targetValue}});
+        const totalUpdated = await query1.getUpdater({filter: {$inc: {numberValue: 2}}}).updateMany();
 
         // compare the result again
         const documents2 = await query1.findMany();

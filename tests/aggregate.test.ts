@@ -87,10 +87,20 @@ describe("Aggregate Test", () => {
     });
 
     it("simple aggregate", async () => {
-        const result = await repository1.aggregate()
+        const result1 = await repository1.aggregate()
             .match(x => x.filter("index", 0))
+            .project({_id: 1})
             .findOne();
-        assert.isDefined(result);
+        assert.isDefined(result1);
+        assert.isUndefined(result1!.index);
+
+        const result2 = await repository1.aggregate()
+            .match(x => x.filter("index", 0))
+            .project({_id: 1})
+            .toDocument()
+            .findOne();
+        assert.isDefined(result2);
+        assert.isDefined(result2!.index);
     });
 
     it("aggregate with weakType", async () => {
@@ -103,15 +113,17 @@ describe("Aggregate Test", () => {
         const iterator = await repository1.aggregate()
             .match(x => x.filter("numberValue", numberValue))
             .project({_id: 1})
-            .getAsyncIterator<{_id: number}>();
+            .toDocument()
+            .getAsyncIterator();
 
         const results: any[] = [];
         for await (const item of iterator) {
             results.push(item);
             assert.isObject(item._id);
+            assert.isDefined(item.index);
         }
         assert.equal(results.length, total);
-        assert.hasAllKeys(results[0], ["_id"]);
+        assert.containsAllKeys(results[0], ["_id", "index", "mod", "name"]);
     });
 
     it("error", async () => {
@@ -290,7 +302,7 @@ describe("Aggregate Test", () => {
                 pipeline: [{$project: {_id: 1, hello: "$$newField"}}],
                 as: "child",
             })
-            .findMany<{child: Array<{_id: number, hello: number}>}>();
+            .findMany();
         assert.equal(results.length, total);
         assert.isArray(results[0].child);
         assert.equal(results[0].child.length, total);

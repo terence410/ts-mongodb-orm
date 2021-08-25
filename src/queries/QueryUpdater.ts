@@ -4,8 +4,7 @@ import {
     IDocumentInstance,
     IFindOneAndUpdateOptions,
     IQueryUpdaterOptions,
-    IUpdateManyOptions,
-    IUpdateOneOptions,
+    IUpdateOptions,
 } from "../types";
 import {updateStack} from "../utils";
 import {Query} from "./Query";
@@ -13,7 +12,7 @@ import {QueryBaseUpdater} from "./QueryBaseUpdater";
 
 export class QueryUpdater<TD extends IDocumentClass, AD extends IDocumentInstance>  extends QueryBaseUpdater<AD> {
     constructor(protected query: Query<TD, AD>, options: IQueryUpdaterOptions<TD> = {}) {
-        super(options.query);
+        super(options.filter);
     }
 
     public async findOneAndUpdate(options: IFindOneAndUpdateOptions = {}): Promise<InstanceType<TD> | undefined> {
@@ -21,12 +20,12 @@ export class QueryUpdater<TD extends IDocumentClass, AD extends IDocumentInstanc
 
         const friendlyErrorStack = tsMongodbOrm.getFriendlyErrorStack();
         try {
-            const mongodbResponse = await collection.findOneAndUpdate(this.query.nativeQuery,
-                this.nativeQuery, {session: this.query.session, returnOriginal: false, ...options});
+            const mongodbResponse = await collection.findOneAndUpdate(this.query.nativeFilter,
+                this.nativeFilter, {session: this.query.session, returnDocument: "after", ...options});
 
             // return a document
             if (mongodbResponse.value) {
-                return tsMongodbOrm.loadEntity(this.query.classObject, mongodbResponse.value);
+                return tsMongodbOrm.loadDocument(this.query.classObject, mongodbResponse.value);
             }
 
         } catch (err) {
@@ -35,13 +34,13 @@ export class QueryUpdater<TD extends IDocumentClass, AD extends IDocumentInstanc
 
     }
 
-    public async updateOne(options: IUpdateOneOptions = {}): Promise<number> {
+    public async updateOne(options: IUpdateOptions = {}): Promise<number> {
         const collection = this.query.getCollection();
 
         const friendlyErrorStack = tsMongodbOrm.getFriendlyErrorStack();
         try {
-            const mongodbResponse = await collection.updateOne(this.query.nativeQuery,
-                this.nativeQuery, {session: this.query.session, ...options});
+            const mongodbResponse = await collection.updateOne(this.query.nativeFilter,
+                this.nativeFilter, {session: this.query.session, ...options});
             return mongodbResponse.modifiedCount + mongodbResponse.upsertedCount;
 
         } catch (err) {
@@ -49,13 +48,13 @@ export class QueryUpdater<TD extends IDocumentClass, AD extends IDocumentInstanc
         }
     }
 
-    public async updateMany(options: IUpdateManyOptions = {}): Promise<number> {
+    public async updateMany(options: IUpdateOptions = {}): Promise<number> {
         const collection = this.query.getCollection();
 
         const friendlyErrorStack = tsMongodbOrm.getFriendlyErrorStack();
         try {
-            const mongodbResponse = await collection.updateMany(this.query.nativeQuery,
-                this.nativeQuery, {session: this.query.session, ...options});
+            const mongodbResponse = await collection.updateMany(this.query.nativeFilter,
+                this.nativeFilter, {session: this.query.session, ...options});
             return mongodbResponse.modifiedCount + mongodbResponse.upsertedCount;
 
         } catch (err) {

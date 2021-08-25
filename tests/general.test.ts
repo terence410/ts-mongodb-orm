@@ -98,7 +98,7 @@ describe("General Test", () => {
         assert.deepEqual(document._id, deletedDocument1);
 
         // delete again (nothing return, but no error)
-        const deletedDocument2 = await repository1.query({query: {_id: document._id}}).getDeleter().findOneAndDelete();
+        const deletedDocument2 = await repository1.query({filter: {_id: document._id}}).getDeleter().findOneAndDelete();
         assert.isUndefined(deletedDocument2);
     });
 
@@ -170,7 +170,7 @@ describe("General Test", () => {
         });
         await repository1.insert(document);
 
-        const query = repository1.query({query: {_id: document._id}});
+        const query = repository1.query({filter: {_id: document._id}});
         const findDocument1 = await query.getUpdater()
             .set("stringValue", "xyz")
             .inc("numberValue", 50)
@@ -245,8 +245,9 @@ describe("General Test", () => {
     });
 
     it("insert on new", async () => {
-        const _id = ObjectId.createFromTime(new Date().getTime());
-        const query = repository1.query({query: {_id}});
+        const _id = ObjectId.createFromTime(new Date().getTime() / 1000 | 0);
+        const query = repository1.query({filter: {_id}});
+
         const document1 = await query
             .getUpdater()
             .setOnInsert("stringValue", "upsert")
@@ -261,7 +262,7 @@ describe("General Test", () => {
     });
 
     it("atomic won't have any conflict", async () => {
-        const _id = ObjectId.createFromTime(new Date().getTime());
+        const _id = ObjectId.createFromTime(new Date().getTime() / 1000 | 0);
         const total = 50;
         const batch = 10;
 
@@ -291,8 +292,8 @@ describe("General Test", () => {
         await repository1.insert(document);
 
         const updatedDocument = await repository1
-            .query({query: {_id: document._id}})
-            .getUpdater({query: {$inc: {numberValue: 50}}})
+            .query({filter: {_id: document._id}})
+            .getUpdater({filter: {$inc: {numberValue: 50}}})
             .findOneAndUpdate();
         assert.equal(updatedDocument!.numberValue, 100);
     });
@@ -301,10 +302,10 @@ describe("General Test", () => {
         const document1 = new GeneralTest();
         await repository1.insert(document1);
 
-        const document2 = await repository1.query({query: document1._id}).findOne();
+        const document2 = await repository1.query({filter: document1._id}).findOne();
         assert.isDefined(document2);
 
-        const document3 = await repository1.query({query: {_id: document1._id}})
+        const document3 = await repository1.query({filter: {_id: document1._id}})
             .getUpdater()
             .set("stringValue", "hello")
             .findOneAndUpdate();
@@ -387,7 +388,7 @@ describe("General Test", () => {
         const [document1] = await repository1.insertMany([repository1.create()]);
         const document2 = await repository1.insert(repository1.create());
         const document2a = repository1.create({_id: document1._id});
-        const document2b = repository1.create({_id: ObjectId.createFromTime(new Date().getTime())});
+        const document2b = repository1.create({_id: ObjectId.createFromTime(new Date().getTime() / 1000 | 0)});
         const document2c = repository1.create({_id: document2._id});
         const document2d = repository1.create();
 

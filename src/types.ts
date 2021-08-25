@@ -2,17 +2,17 @@
 import {EventEmitter} from "events";
 import {
     ClientSession,
-    CollectionInsertManyOptions,
-    CollectionInsertOneOptions,
-    CommonOptions,
-    FilterQuery,
-    FindOneAndUpdateOption,
+    DeleteOptions,
+    UpdateOptions,
+    Filter,
+    UpdateFilter,
+    BulkWriteOptions,
+    InsertOneOptions,
+    FindOneAndUpdateOptions,
+    FindOneAndDeleteOptions,
     MongoClient,
     MongoError,
     TransactionOptions,
-    UpdateManyOptions,
-    UpdateOneOptions,
-    UpdateQuery,
 } from "mongodb";
 import {ChangeStreamWrapper} from "./watch/ChangeStreamWrapper";
 
@@ -140,35 +140,32 @@ export type IWeakTypeAggregateOptions = {
 };
 export type IQueryOptions<TD extends IDocumentClass> = {
     weakType?: false,
-    query?: FilterQuery<IDocumentObject<InstanceType<TD>>>,
+    filter?: Filter<IDocumentObject<InstanceType<TD>>>,
     session?: ClientSession,
 };
 export type IWeakTypeQueryOptions<TD extends IDocumentClass> = {
     weakType: true,
-    query?: FilterQuery<IDocumentObject<InstanceType<TD>>>,
+    filter?: Filter<IDocumentObject<InstanceType<TD>>>,
     session?: ClientSession,
 };
 export type IQueryUpdaterOptions<TD extends IDocumentClass> = {
     weakType?: false,
-    query?: UpdateQuery<IDocumentObject<InstanceType<TD>>>;
+    filter?: UpdateFilter<IDocumentObject<InstanceType<TD>>>;
 };
 export type IWeakTypeQueryUpdaterOptions<TD extends IDocumentClass> = {
     weakType: true,
-    query?: UpdateQuery<IDocumentObject<InstanceType<TD>>>;
+    filter?: UpdateFilter<IDocumentObject<InstanceType<TD>>>;
 };
 
 // endregion
 
 // region document operation
 
-export type IInsertOptions = CollectionInsertOneOptions;
-export type IInsertManyOptions = CollectionInsertManyOptions;
-export type IUpdateOptions = UpdateOneOptions;
-export type IDeleteOptions = CommonOptions & { bypassDocumentValidation?: boolean };
-export type IDeleteManyOptions = CommonOptions;
-export type IFindOneAndUpdateOptions =  FindOneAndUpdateOption<any>;
-export type IUpdateOneOptions =  UpdateOneOptions;
-export type IUpdateManyOptions =  UpdateManyOptions;
+export type IInsertOneOptions = InsertOneOptions;
+export type IBulkWriteOptions = BulkWriteOptions;
+export type IUpdateOptions = UpdateOptions;
+export type IDeleteOptions = DeleteOptions & { bypassDocumentValidation?: boolean };
+export type IFindOneAndUpdateOptions =  FindOneAndUpdateOptions;
 
 // endregion
 

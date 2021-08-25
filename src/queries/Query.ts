@@ -27,7 +27,7 @@ export class Query<TD extends IDocumentClass, D extends IDocumentInstance = Inst
     private _sort?: any;
 
     constructor(options: IRepositoryOptions<TD>, queryOptions: IQueryOptions<TD> = {}) {
-        super(queryOptions.query);
+        super(queryOptions.filter);
 
         this.mongoClient = options.mongoClient;
         this.classObject = options.classObject;
@@ -82,21 +82,21 @@ export class Query<TD extends IDocumentClass, D extends IDocumentInstance = Inst
 
     public getAsyncIterator() {
         const collection = this.getCollection();
-        const cursor = collection.find(this.nativeQuery,
+        const cursor = collection.find(this.nativeFilter,
             {session: this.session, skip: this._skip, limit: this._limit, sort: this._sort});
         return new QueryAsyncIterator({classObject: this.classObject, cursor});
     }
 
     public async findOne() {
         const collection = this.getCollection();
-        const cursor = collection.find(this.nativeQuery,
+        const cursor = collection.find(this.nativeFilter,
             {session: this.session, skip: this._skip, limit: this._limit, sort: this._sort});
 
         const friendlyErrorStack = tsMongodbOrm.getFriendlyErrorStack();
         try {
             const data = await cursor.next();
             if (data) {
-                return tsMongodbOrm.loadEntity(this.classObject, data);
+                return tsMongodbOrm.loadDocument(this.classObject, data);
             }
 
         } catch (err) {
@@ -106,7 +106,7 @@ export class Query<TD extends IDocumentClass, D extends IDocumentInstance = Inst
 
     public async findMany() {
         const collection = this.getCollection();
-        const cursor = collection.find(this.nativeQuery,
+        const cursor = collection.find(this.nativeFilter,
             {session: this.session, skip: this._skip, limit: this._limit, sort: this._sort});
 
         const friendlyErrorStack = tsMongodbOrm.getFriendlyErrorStack();
@@ -114,7 +114,7 @@ export class Query<TD extends IDocumentClass, D extends IDocumentInstance = Inst
             const results = await cursor.toArray();
             const documents: Array<InstanceType<TD>> = [];
             for (const data of results) {
-                const document = tsMongodbOrm.loadEntity(this.classObject, data);
+                const document = tsMongodbOrm.loadDocument(this.classObject, data);
                 documents.push(document);
             }
 
@@ -127,7 +127,7 @@ export class Query<TD extends IDocumentClass, D extends IDocumentInstance = Inst
 
     public async count(): Promise<number> {
         const collection = this.getCollection();
-        const cursor =  collection.find(this.nativeQuery, {session: this.session});
+        const cursor =  collection.find(this.nativeFilter, {session: this.session});
 
         const friendlyErrorStack = tsMongodbOrm.getFriendlyErrorStack();
         try {
@@ -140,7 +140,7 @@ export class Query<TD extends IDocumentClass, D extends IDocumentInstance = Inst
 
     public async explain(): Promise<IExplain> {
         const collection = this.getCollection();
-        const cursor = collection.find(this.nativeQuery,
+        const cursor = collection.find(this.nativeFilter,
             {session: this.session, skip: this._skip, limit: this._limit, sort: this._sort});
 
         const friendlyErrorStack = tsMongodbOrm.getFriendlyErrorStack();

@@ -10,7 +10,7 @@ type ITextOptions = {
 };
 
 export class QueryLogic<D extends IDocumentInstance> {
-    constructor(public nativeQuery: any = {}) {
+    constructor(public nativeFilter: any = {}) {
     }
 
     public filter<K extends keyof D>(name: K, expression: (query: QueryOperator<D>) => any): this;
@@ -19,13 +19,13 @@ export class QueryLogic<D extends IDocumentInstance> {
         const fieldName = args[0];
         if (typeof args[1] === "function") {
             const newFilterQuery = {};
-            this.nativeQuery[fieldName] = newFilterQuery;
+            this.nativeFilter[fieldName] = newFilterQuery;
             const callback = args[1];
             const subQuery = new QueryOperator(newFilterQuery);
             callback(subQuery);
 
         } else {
-            this.nativeQuery[fieldName] = args[1];
+            this.nativeFilter[fieldName] = args[1];
         }
 
         return this;
@@ -62,9 +62,9 @@ export class QueryLogic<D extends IDocumentInstance> {
     // https://docs.mongodb.com/manual/reference/operator/query/text/
     public text(value: string | ITextOptions): this {
         if (typeof value === "string") {
-            this.nativeQuery.$text = {$search: value};
+            this.nativeFilter.$text = {$search: value};
         } else {
-            this.nativeQuery.$text = value;
+            this.nativeFilter.$text = value;
         }
 
         return this;
@@ -73,12 +73,12 @@ export class QueryLogic<D extends IDocumentInstance> {
     // endregion
 
     private _createConditionFilter(key: string, ...args: any[]): this {
-        if (!this.nativeQuery[key]) {
-            this.nativeQuery[key] = [];
+        if (!this.nativeFilter[key]) {
+            this.nativeFilter[key] = [];
         }
 
         const subNativeQuery: any = {};
-        this.nativeQuery[key].push(subNativeQuery);
+        this.nativeFilter[key].push(subNativeQuery);
 
         // if this is an expression
         if (typeof args[0] === "function") {

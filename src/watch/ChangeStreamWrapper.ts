@@ -27,7 +27,7 @@ export class ChangeStreamWrapper<TD extends IDocumentClass> extends EventEmitter
         this.classObject = options.classObject;
 
         const collection =  this.getCollection();
-        this.changeStream = collection.watch({ fullDocument: "updateLookup"});
+        this.changeStream = collection.watch([], { fullDocument: "updateLookup"});
         this.changeStream.on("change", this._onChange.bind(this));
         this.changeStream.on("error", this._onError.bind(this));
         this.changeStream.on("end", this._onEnd.bind(this));
@@ -40,7 +40,7 @@ export class ChangeStreamWrapper<TD extends IDocumentClass> extends EventEmitter
     }
 
     public isClosed(): boolean {
-        return this.changeStream.isClosed();
+        return this.changeStream.closed;
     }
 
     public async close(): Promise<void> {
@@ -86,7 +86,7 @@ export class ChangeStreamWrapper<TD extends IDocumentClass> extends EventEmitter
 
         const {operationType, fullDocument, documentKey, ns} = changeEvent;
         if (operationType === "insert" || operationType === "update") {
-            const document = tsMongodbOrm.loadEntity(this.classObject, fullDocument);
+            const document = tsMongodbOrm.loadDocument(this.classObject, fullDocument);
 
             return {
                 operationType,
