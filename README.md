@@ -21,16 +21,20 @@ This library have zero dependencies, which means it works with your own mongodb 
 npm install --save mongodb @types/mongodb
 ```
 
+To use with mongodb@4.x.x versions, please use Nodejs 12 or above.
+
 This library has been tested with the follow [mongodb](https://www.npmjs.com/package/mongodb) versions:
-- v4.1.0
-- v3.6.11 (please install ts-mongodb-orm@1.0.x for below versions)
-- v3.6.9
-- v3.6.3
-- v3.6.0
-- v3.5.10
-- v3.4.1
-- v3.3.5
-- v3.2.7
+- compatible with ts-mongodb-orm@2.0.x
+    - mongodb@4.1.0
+- compatible with ts-mongodb-orm@1.0.x
+    - mongodb@3.6.11 
+    - mongodb@3.6.9
+    - mongodb@3.6.3
+    - mongodb@3.6.0
+    - mongodb@3.5.10
+    - mongodb@3.4.1
+    - mongodb@3.3.5
+    - mongodb@3.2.7
 
 # Project Setup
 - npm install -s mongodb@latest
