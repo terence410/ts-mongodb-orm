@@ -377,7 +377,7 @@ export class Repository<TD extends IDocumentClass> {
             return documents;
 
         } catch (err) {
-            if (Array.isArray(err.result.result.insertedIds)) {
+            if (Array.isArray(err.result?.result?.insertedIds)) {
                 err.result.result.insertedIds.forEach((x: any, i: number) => {
                     documents[i]._id = x._id;
                 });
