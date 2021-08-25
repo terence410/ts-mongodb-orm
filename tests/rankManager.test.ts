@@ -14,7 +14,7 @@ class RankManagerTest {
 }
 
 const dbName = "rank";
-describe("Lock Manager Test", () => {
+describe("Rank Manager Test", () => {
     let connection!: Connection;
 
     before(async () => {
@@ -238,7 +238,7 @@ describe("Lock Manager Test", () => {
             const rankManager = connection.getRankManager(options);
             await rankManager.init();
 
-            const totalScores = 50;
+            const totalScores = 20;
             const scores = Array(totalScores).fill(0)
                 .map(x => minScore + (maxScore - minScore) * Math.random() | 0)
                 .sort((a, b) => b - a);
