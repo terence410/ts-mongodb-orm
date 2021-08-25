@@ -120,6 +120,12 @@ describe("General Test", () => {
         }
     });
 
+    it("insert empty array of documents", async () => {
+        await assertMongoError(async () => {
+            const results = await repository1.insertMany([]);
+        }, /Invalid Operation, no operations specified/)
+    });
+
     it("insert array of documents with error", async () => {
         const newDocument = repository1.create();
         await repository1.insert(newDocument);
