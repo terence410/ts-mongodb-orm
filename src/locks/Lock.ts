@@ -107,7 +107,7 @@ export class Lock {
             classObject: LockDocument,
             dbName: this.options.dbName,
             collectionName: this.options.collectionName,
-        }, {query: {_id: this._id, randomId: this.randomId}})
+        }, {filter: {_id: this._id, randomId: this.randomId}})
             .getDeleter()
             .deleteOne();
     }
