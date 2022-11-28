@@ -25,6 +25,10 @@ To use with mongodb@4.x.x versions, please use Nodejs 12 or above.
 
 This library has been tested with the follow [mongodb](https://www.npmjs.com/package/mongodb) versions:
 - compatible with ts-mongodb-orm@2.0.x
+    - mongodb@4.12.1
+    - mongodb@4.11.0
+    - mongodb@4.10.0
+    - mongodb@4.5.0
     - mongodb@4.1.0
 - compatible with ts-mongodb-orm@1.0.x
     - mongodb@3.6.11 

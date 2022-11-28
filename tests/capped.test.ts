@@ -1,4 +1,5 @@
 import { assert, expect } from "chai";
+import {MongoError} from "mongodb";
 import { Connection, Document, Field, ObjectId, Repository} from "../src";
 // @ts-ignore
 import {addConnection, assertMongoError} from "./share";
@@ -33,7 +34,12 @@ describe("Capped Test", () => {
         // new capped collection
         const cappedMax = 8;
         const crappedBySize = 1024;
-        const collection = await connection.getRepository(CappedTest).createCollection({capped: true, size: crappedBySize, max: cappedMax});
+        const collection = await connection.getRepository(CappedTest)
+            .createCollection({
+                capped: true,
+                size: crappedBySize,
+                max: cappedMax, strict: true,
+            });
         assert.isTrue(await collection.isCapped());
 
         const total = 100;
@@ -77,8 +83,16 @@ describe("Capped Test", () => {
     });
 
     it("try to delete a document", async () => {
-        await assertMongoError(async () => {
+        let mongoError: MongoError | undefined;
+        try {
             await repository.query().getDeleter().deleteOne();
-        }, /cannot remove from a capped collection/);
+        } catch (err){
+            mongoError = err;
+        }
+
+        // in case we have error from some old version of mongodb
+        if (mongoError) {
+            assert.match(mongoError.message, /cannot remove from a capped collection/);
+        }
     });
 });

@@ -1,4 +1,3 @@
-import {ReadPreference} from "mongodb";
 import {
     AfterLoad,
     BeforeDelete,

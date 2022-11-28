@@ -131,7 +131,7 @@ describe("Aggregate Test", () => {
             const result8 = await repository1.aggregate()
                 .limit(-1)
                 .findMany();
-        }, /the limit must be positive/);
+        }, /the limit must be positive|Expected a positive number/);
 
         await assertMongoError(async () => {
             const iterator = await repository1.aggregate()
@@ -141,7 +141,7 @@ describe("Aggregate Test", () => {
             for await (const item of iterator) {
                 // do nothing
             }
-        }, /the limit must be positive/);
+        }, /the limit must be positive|Expected a positive number/);
     });
 
     it("addFields / set", async () => {
@@ -329,7 +329,7 @@ describe("Aggregate Test", () => {
             .merge({into: anotherCollectionName})
             .findOne();
         assert.isNull(result);
-        
+
         const resultAfter = await repository2.aggregate()
             .count("total")
             .findOne();
