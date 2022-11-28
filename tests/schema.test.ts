@@ -18,6 +18,7 @@ class SchemaTest {
     @Field({schema: {bsonType: "date"}})
     public dateValue?: any;
 
+    // public objectValue?: {name: string}; // you can use stronger type type here, schema is for server side type protection
     @Field({schema: {bsonType: "object", additionalProperties: true, properties: {name: {bsonType: "string"}}}})
     public objectValue?: any;
 
